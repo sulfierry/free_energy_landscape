@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=69.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "free_energy_landscape"
+version = "0.0.1"
+description = "...."
+readme = "README.rst"
+authors = [{ name = "Leon Sulfierry", email = "sulfierry@gmail.com" }]
+license = {text = "LGPL-3.0-only"}
+classifiers = [
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Environment :: GPU",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+keywords = ["...", "...", "...", "..."]
+dependencies = [
+    "numpy>=1.23.5, <2.0.0",
+    "imageio>=2.34.0, <3.0.0",
+    "matplotlib>=3.7.4, <4.0.0",
+    "scipy==1.10.1, <2.0.0",
+]
+requires-python = ">=3.8"
+
+[tool.setuptools]
+packages = ["free_energy_landscape"]
+
+[project.urls]
+Homepage = "https://github.com/sulfierry/free_energy_landscape/"
