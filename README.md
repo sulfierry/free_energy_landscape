@@ -200,7 +200,7 @@ The `FreeEnergyLandscape` class generates three key visualizations to aid in the
 
 This updated figure now integrates the normalized free energy profiles for both CV1 (Angle) and CV2 (Distance) in a single, unified visualization. This enhancement allows for a direct comparison between the two collective variables, illuminating their unique energy landscapes and pinpointing low-energy regions across specified energy threshold ranges.
 
-![Alt text da image](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/1_Combined_Free_Energy_Profile_Normalized.png)
+![Alt text da image](https://raw.githubusercontent.com/sulfierry/MolecularModeling/main/FreeEnergyLandscape/1_Combined_Free_Energy_Profile_Normalized.png)
 
 - **X-Axis**: Displays both CV1 and CV2, with CV1 representing an angle and CV2 denoting distance in Ångströms, facilitating a comprehensive view of the system's energetics.
 - **Y-Axis**: Represents the normalized free energy, derived from the probability distributions of CV1 and CV2 using the Boltzmann equation.
@@ -217,7 +217,7 @@ This updated figure now integrates the normalized free energy profiles for both 
 
 This figure innovatively plots the values of CV1 (Angle) and CV2 (Distance) against simulation frames in the same image. It offers insights into how the values of these collective variables evolve over time, shedding light on the dynamic aspects of the system's behavior.
 
-![Alt text da image](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/3_cv_by_frame_combined_normalized.png)
+![Alt text da image](https://raw.githubusercontent.com/sulfierry/MolecularModeling/main/FreeEnergyLandscape/3_cv_by_frame_combined_normalized.png)
 
 
 - **X-Axis**: Represents the simulation frames, providing a temporal dimension to the analysis.
@@ -228,7 +228,7 @@ This figure innovatively plots the values of CV1 (Angle) and CV2 (Distance) agai
 
 The third figure combines both CV1 and CV2 to produce a two-dimensional free energy landscape, offering a comprehensive view of the system's energetics over the considered collective variables.
 
-![Alt text da image](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/fel_angle_distance.png)
+![Alt text da image](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/fel_angle_distance.png?raw=true)
 
 - **X-Axis**: CV1, representing an angle, with the same labeling as in Figure 1 (left).
 - **Y-Axis**: CV2, representing a distance, with the same labeling as in Figure 1 (right).
@@ -238,7 +238,7 @@ The third figure combines both CV1 and CV2 to produce a two-dimensional free ene
 
 This figure provides a three-dimensional visualization of the free energy landscape, combining both collective variables, CV1 and CV2, along with the calculated free energy values to offer a dynamic perspective on the system's energetics.
 
-![Alt Text](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/energy_landscape_3D.gif)
+![Alt Text](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/energy_landscape_3D.gif?raw=true)
 
 
 - **X-Axis**: CV1, representing an angle, with the same labeling as in Figure 4.
