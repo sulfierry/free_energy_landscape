@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "free_energy_landscape"
 version = "0.0.4"
-description = "The Free Energy Landscape Analysis tool offers a comprehensive suite for analyzing and visualizing the free energy landscape derived from molecular dynamics simulations. It focuses on extracting critical insights from collective variable (CV) data, enabling researchers to understand the energetics and dynamics of molecular systems in depth. By providing a range of visualizations and analytical features, this tool aids in identifying stable states, energy barriers, and the impact of collective variables on the system's behavior over time."
+description = "The Free Energy Landscape Analysis tool provides a full suite for analyzing and visualizing free energy landscapes from molecular dynamics simulations. It focuses on deriving key insights from collective variable (CV) data, helping researchers deeply understand molecular systems' energetics and dynamics."
 readme = "README.md"
 authors = [{ name = "Leon Sulfierry", email = "sulfierry@gmail.com" }]
 license = {text = "LGPL-3.0-only"}
