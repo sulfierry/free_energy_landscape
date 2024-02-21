@@ -327,7 +327,7 @@ class FreeEnergyLandscape:
     def help():
         help_text = """
         Usage: 
-            python freeEnergyLandscape.py path/to/cv1_data.txt path/to/cv2_data.txt
+            free_energy_landscape path/to/cv1_data.txt path/to/cv2_data.txt
 
         Optional arguments:
             --temperature           [int]       Simulation temperature in Kelvin (default: 300K)
@@ -341,7 +341,7 @@ class FreeEnergyLandscape:
             --gif_duration          [float]     Duration per frame in the GIF in seconds (default: 0.1)
 
         Example:
-            python freeEnergyLandscape.py cv1.txt cv2.txt --names Angle_CV1 Distance_CV2 --temperature 310 --energy 5 --bins_energy_histogram 100 --kde_bandwidth 0.5 --gif_angles 20
+            free_energy_landscape cv1.txt cv2.txt --names Angle_CV1 Distance_CV2 --temperature 310 --energy 5 --bins_energy_histogram 100 --kde_bandwidth 0.5 --gif_angles 20
 
         """
         #      Notes:
@@ -353,8 +353,8 @@ class FreeEnergyLandscape:
     def main(self, energy_threshold, cv_names, n_angles, elevation, duration_per_frame):
         
         # Verificar ambos os arquivos de entrada antes de carregar os dados
-        self.verify_input(self.cv1_path)
-        self.verify_input(self.cv2_path)
+        # self.verify_input(self.cv1_path)
+        # self.verify_input(self.cv2_path)
         self.load_data()
         
         self.boltzmann_inversion(
@@ -393,8 +393,7 @@ class FreeEnergyLandscape:
         if hasattr(self, 'cached_results'):
             del self.cached_results
 
-
-if __name__ == "__main__":
+def main():
 
     # Definindo valores padrão
     t = 300                     # --temperature           [int] [Kelvin]
@@ -460,3 +459,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         sys.exit(1)
+
+if __name__ == "__main__":
+    main()
