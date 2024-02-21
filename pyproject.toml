@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "free_energy_landscape"
-version = "0.0.1"
-description = "...."
-readme = "README.rst"
+version = "0.0.4"
+description = "The Free Energy Landscape Analysis tool offers a comprehensive suite for analyzing and visualizing the free energy landscape derived from molecular dynamics simulations. It focuses on extracting critical insights from collective variable (CV) data, enabling researchers to understand the energetics and dynamics of molecular systems in depth. By providing a range of visualizations and analytical features, this tool aids in identifying stable states, energy barriers, and the impact of collective variables on the system's behavior over time."
+readme = "README.md"
 authors = [{ name = "Leon Sulfierry", email = "sulfierry@gmail.com" }]
 license = {text = "LGPL-3.0-only"}
 classifiers = [
@@ -19,7 +19,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-keywords = ["...", "...", "...", "..."]
+keywords = ["Free energy landscape", "Molecular Dynamics", "Collective variables", "Boltzmann equation"]
 dependencies = [
     "numpy>=1.23.5, <2.0.0",
     "imageio>=2.34.0, <3.0.0",
@@ -32,4 +32,8 @@ requires-python = ">=3.8"
 packages = ["free_energy_landscape"]
 
 [project.urls]
-Homepage = "https://github.com/sulfierry/free_energy_landscape/"
+Repository =  "https://github.com/sulfierry/free_energy_landscape/"
+
+
+[project.scripts]
+free_energy_landscape = "free_energy_landscape.freeEnergyLandscape:main"
