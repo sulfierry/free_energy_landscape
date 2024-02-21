@@ -54,7 +54,7 @@ Optional Arguments:
 
    --temperature           [int]       Simulation temperature in Kelvin (default: 300K)
    --kb                    [float]     Boltzmann constant in kJ/(mol·K) (default: 8.314e-3)
-   --energy                [int]       Energy, single value (default: None)
+   --energy                [float]     Energy, single value (default: None)
    --bins_energy_histogram [int]       Bins for energy histogram (default: 100)
    --kde_bandwidth         [float]     Bandwidth for kernel density estimation (default: None)
    --names                 [str] [str] Names for the collective variables (default: CV1, CV2)
