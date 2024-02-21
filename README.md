@@ -36,20 +36,25 @@ These dependencies also are listed in the `requirements.txt` file. To install th
 ```bash
 pip install -r requirements.txt
 ```
+To install the free energy landscape:
+
+```bash
+pip install free-energy-landscape
+```
 
 ## Usage
 
 Ensure your data file is in the correct two-column format. Run the script with the path to your data files and optional arguments as needed:
 
 ```bash
-python freeEnergyLandscape.py path/to/cv1_data.txt path/to/cv2_data.txt
+free_energy_landscape path/to/cv1_data.txt path/to/cv2_data.txt
 ```
 ```bash
 Optional Arguments:
 
    --temperature           [int]       Simulation temperature in Kelvin (default: 300K)
    --kb                    [float]     Boltzmann constant in kJ/(mol·K) (default: 8.314e-3)
-   --energy                [int]       Energy, single value (default: None)
+   --energy                [float]     Energy, single value (default: None)
    --bins_energy_histogram [int]       Bins for energy histogram (default: 100)
    --kde_bandwidth         [float]     Bandwidth for kernel density estimation (default: None)
    --names                 [str] [str] Names for the collective variables (default: CV1, CV2)
@@ -58,8 +63,9 @@ Optional Arguments:
    --gif_duration          [float]     Duration per frame in the GIF in seconds (default: 0.1)
 ```
 ```bash
-python freeEnergyLandscape.py path/to/cv1_data.txt path/to/cv2_data.txt  --names CV1_angle CV2_distance --energy 3
+free_energy_landscape path/to/cv1_data.txt path/to/cv2_data.txt --names "CV1 (Angle)" "CV2 (Distance)" --energy 3
 ```
+
 
 ## Theoretical Background
 
