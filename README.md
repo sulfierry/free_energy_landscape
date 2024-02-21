@@ -208,7 +208,7 @@ This updated figure now integrates the normalized free energy profiles for both 
 
 ### Figure 2: Histograms of Normalized CV1 and CV2 Values Side by Side
 
-![Alt text da image](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/2_histograms_normalized_side_by_side.png)
+![Alt text da image](https://raw.githubusercontent.com/sulfierry/MolecularModeling/main/FreeEnergyLandscape/2_histograms_normalized_side_by_side.png)
 
 - **Visualization**: Two histograms placed side by side, one for CV1 (Angle) and the other for CV2 (Distance), each showing the normalized value distribution. This format allows for an easy comparison of the two variables' behaviors and predominant states within the simulation.
 
