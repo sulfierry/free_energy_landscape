@@ -8,10 +8,12 @@ import numpy as np
 import imageio.v2 as imageio
 import matplotlib.pyplot as plt
 from scipy.stats import gaussian_kde
+from joblib import Parallel, delayed
 from matplotlib.colors import LinearSegmentedColormap
 
+
 class FreeEnergyLandscape:
-    
+
     def __init__(self, cv1_path, cv2_path, temperature, boltzmann_constant, bins=100, kde_bandwidth=None, cv_names=['CV1', 'CV2']):
         self.cv1_path = cv1_path
         self.cv2_path = cv2_path
@@ -32,52 +34,51 @@ class FreeEnergyLandscape:
         self.custom_cmap = LinearSegmentedColormap.from_list("custom_energy", self.colors)
         self.proj1_data_original = None
         self.proj2_data_original = None
+        # self.proj1_data_index = None
+        # self.proj2_data_index = None
         self.bins = bins
         self.kde_bandwidth = kde_bandwidth
-        
+
 
     def load_data(self):
+        # Carrega os dados das variáveis coletivas e os índices dos frames
         self.proj1_data_original = np.loadtxt(self.cv1_path, usecols=[1])
         self.proj2_data_original = np.loadtxt(self.cv2_path, usecols=[1])
 
 
-    def boltzmann_inversion(self, data_list, titles, threshold):
+    def boltzmann_inversion(self, data_list, titles, threshold=None):
         fig_combined, axs_combined = plt.subplots(1, len(data_list), figsize=(20, 6), sharey=True)
 
-        # Primeiro, calculamos o G_max_global com base em todos os conjuntos de dados
-        G_max_global = -np.inf
-        for data in data_list:
+        # Ajusta a maneira como o threshold é tratado em relação à energia livre
+        for ax, data, title in zip(axs_combined, data_list, titles):
+            # Calcula o histograma e a energia livre G para cada conjunto de dados
             hist, bin_edges = np.histogram(data, bins=100, density=True)
             hist = np.clip(hist, a_min=1e-10, a_max=None)
-            G = -self.kB * self.temperature * np.log(hist + 1e-10)
-            G_max_global = max(G_max_global, np.max(G))
-
-        # Agora, plotamos cada variável coletiva e seus pontos de baixa energia
-        for ax, data, title in zip(axs_combined, data_list, titles):
-            hist, bin_edges = np.histogram(data, bins=100, density=True)
+            G = -self.kB * self.temperature * np.log(hist)
             bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
-            G = -self.kB * self.temperature * np.log(hist + 1e-10)
-            G_normalized = G / G_max_global
 
-            ax.plot(bin_centers, G_normalized, label='Free energy', color='red')
+            # Normaliza G subtraindo o mínimo para que o menor valor seja zero
+            G_min_normalized = G - np.min(G)
+
+            # Plota a curva de energia livre
+            ax.plot(bin_centers, G_min_normalized, label='Free energy', color='red')
             ax.set_xlabel(title)
-            ax.set_ylim(0, 1)
 
-            # Aplicamos o threshold diretamente ao G normalizado para cada variável
+            # Se um threshold é especificado, plota os pontos de energia abaixo deste threshold
             if threshold is not None:
-                # Para cada variável, recalculamos o threshold_normalized baseado no seu próprio G_max
-                G_max = np.max(G)
-                threshold_normalized = threshold / G_max
-                low_energy_bins = G_normalized < threshold_normalized
-                if any(low_energy_bins):
-                    ax.scatter(bin_centers[low_energy_bins], G_normalized[low_energy_bins], color='magenta', label='Low energy points')
+                # Identifica os pontos onde a energia livre é menor ou igual ao threshold
+                low_energy_indices = G_min_normalized <= threshold
+                if np.any(low_energy_indices):
+                    # Plota esses pontos como pontos roxos
+                    ax.scatter(bin_centers[low_energy_indices], G_min_normalized[low_energy_indices], color='magenta', label='Low energy points', s=50)
 
-        axs_combined[0].set_ylabel('Normalized Free Energy')
+        axs_combined[0].set_ylabel('Free Energy (kJ/mol)')
         plt.legend()
         plt.suptitle('Normalized Free Energy Profile Comparison')
         plt.tight_layout(rect=[0, 0, 1, 0.95])
         plt.savefig('Combined_Free_Energy_Profile_Normalized.png')
         plt.show()
+
 
     def calculate_free_energy(self, data):
         if hasattr(self, 'cached_results'):
@@ -88,7 +89,7 @@ class FreeEnergyLandscape:
             kernel_original = gaussian_kde(values_original.T, bw_method=self.kde_bandwidth)
         else:
             kernel_original = gaussian_kde(values_original.T)
-        X_original, Y_original = np.mgrid[data[:, 0].min():data[:, 0].max():100j, 
+        X_original, Y_original = np.mgrid[data[:, 0].min():data[:, 0].max():100j,
                                           data[:, 1].min():data[:, 1].max():100j]
         positions_original = np.vstack([X_original.ravel(), Y_original.ravel()])
         Z_original = np.reshape(kernel_original(positions_original).T, X_original.shape)
@@ -104,25 +105,16 @@ class FreeEnergyLandscape:
         result = self.calculate_free_energy(data)
         plt.figure(figsize=(8, 6))
 
-        cont = plt.contourf(result['X_original'], result['Y_original'], result['G_original'], 
-                            levels=np.linspace(np.min(result['G_original']), np.max(result['G_original']), 100), 
+        cont = plt.contourf(result['X_original'], result['Y_original'], result['G_original'],
+                            levels=np.linspace(np.min(result['G_original']), np.max(result['G_original']), 100),
                             cmap=self.custom_cmap, extend='both')
 
         if threshold is not None:
             low_energy_mask = result['G_original'] <= threshold
             if np.any(low_energy_mask):  # Verifica se existem pontos de baixa energia para plotar
-                plt.scatter(result['X_original'][low_energy_mask], result['Y_original'][low_energy_mask], 
+                plt.scatter(result['X_original'][low_energy_mask], result['Y_original'][low_energy_mask],
                             color='magenta', s=10, label=f'Energy <= {threshold} kJ/mol')
                 plt.legend(loc='lower left', bbox_to_anchor=(1, 1))
-
-        if threshold is not None:
-            with open('landscape_cv1_cv2_minimuns.tsv', 'w') as file:
-                file.write("frame\tcv1\tcv2\tenergy\n")
-                for i in np.where(low_energy_mask.ravel())[0]:
-                    energy = result['G_original'].ravel()[i]
-                    cv1 = result['X_original'].ravel()[i]
-                    cv2 = result['Y_original'].ravel()[i]
-                    file.write(f"{i}\t{cv1}\t{cv2}\t{energy}\n")
 
         cbar = plt.colorbar(cont)
         cbar.set_label('Free energy (kJ/mol)')
@@ -134,62 +126,27 @@ class FreeEnergyLandscape:
         plt.show()
 
 
-
-    def save_low_energy_points_to_tsv(self, threshold):
-        if threshold is None or threshold < 0:
-            print("Threshold is None or less than 0. No points will be saved.")
-            return
-
-        # Carrega os dados originais novamente para obter os números dos frames
-        cv1_data = np.loadtxt(self.cv1_path)
-        cv2_data = np.loadtxt(self.cv2_path)
-
-        # Supondo que a primeira coluna de cada arquivo contém os números dos frames
-        frames_cv1 = cv1_data[:, 0].astype(int)
-        frames_cv2 = cv2_data[:, 0].astype(int)
-
-        # Calcula a paisagem de energia usando os dados carregados previamente
-        result = self.calculate_free_energy(np.hstack((self.proj1_data_original[:, None], self.proj2_data_original[:, None])))
-
-        low_energy_mask = result['G_original'] <= threshold
-        if not np.any(low_energy_mask):
-            print("No low energy points found. No points will be saved.")
-            return
-
-        with open('low_energy_points.tsv', 'w') as file:
-            file.write("frame\tcv1\tcv2\tenergy\n")
-
-            # Itera sobre os pontos de baixa energia
-            for idx in np.where(low_energy_mask.ravel())[0]:
-                # A coordenada X, Y no espaço de CV1 e CV2 pode ser mapeada de volta para o frame mais próximo
-                # Aqui, assumimos que os frames em CV1 e CV2 estão alinhados e usamos frames de CV1 como referência
-                frame = frames_cv1[idx]  # Usa o número do frame diretamente dos dados carregados
-                cv1 = self.proj1_data_original[idx]
-                cv2 = self.proj2_data_original[idx]
-                g = result['G_original'].flatten()[idx]
-                file.write(f"{frame}\t{cv1}\t{cv2}\t{g}\n")
-
     def plot_3D_energy_landscape(self, threshold=None, titles=['CV1', 'CV2']):
         data = np.hstack((self.proj1_data_original[:, None], self.proj2_data_original[:, None]))
         result = self.calculate_free_energy(data)
-        
+
         fig = plt.figure(figsize=(10, 7))
         ax = fig.add_subplot(111, projection='3d')
-        
+
         # Plotar a superfície da paisagem de energia
-        surf = ax.plot_surface(result['X_original'], result['Y_original'], result['G_original'], cmap=self.custom_cmap, edgecolor='none', alpha=0.5)
+        surf = ax.plot_surface(result['X_original'], result['Y_original'], result['G_original'], cmap=self.custom_cmap, edgecolor='none', alpha=0.6)
         ax.set_xlabel(titles[0])
         ax.set_ylabel(titles[1])
         ax.set_zlabel('Free energy (kJ/mol)')
         ax.set_title('3D Free Energy Landscape')
-        
+
         if threshold is not None:
             if isinstance(threshold, list):
                 for i, interval in enumerate(threshold):
                     self.plot_threshold_points(ax, result, interval[0], interval[1], self.colors[i % len(self.colors)], f'Energy {interval[0]}-{interval[1]} kJ/mol')
             elif isinstance(threshold, (int, float)):
                 self.plot_threshold_points(ax, result, 0, threshold, 'magenta', f'Energy <= {threshold}')
-        
+
         fig.colorbar(surf, shrink=0.5, aspect=5, label='Free energy (kJ/mol)')
         plt.legend(loc='upper left', frameon=False)  # Adicionado frameon=False para evitar erros caso não haja legendas a serem exibidas
         plt.show()
@@ -198,7 +155,7 @@ class FreeEnergyLandscape:
     def plot_threshold_points(self, ax, result, lower_bound, upper_bound, color, label):
         G_flat = result['G_original'].flatten()
         energy_mask = (G_flat >= lower_bound) & (G_flat < upper_bound)
-        
+
         if any(energy_mask):
             X_flat, Y_flat = result['X_original'].flatten(), result['Y_original'].flatten()
             ax.scatter(X_flat[energy_mask], Y_flat[energy_mask], G_flat[energy_mask], color=color, s=20, label=label)
@@ -213,11 +170,12 @@ class FreeEnergyLandscape:
 
         # Gera uma lista de ângulos para um movimento contínuo e suave
         angles = list(range(0, 360, int(360 / n_angles)))
+        
 
         for i, angle in enumerate(angles):
             fig = plt.figure(figsize=(10, 7))
             ax = fig.add_subplot(111, projection='3d')
-            surf = ax.plot_surface(result['X_original'], result['Y_original'], result['G_original'], cmap=self.custom_cmap, edgecolor='none', vmin=np.min(result['G_original']), vmax=np.max(result['G_original']))
+            surf = ax.plot_surface(result['X_original'], result['Y_original'], result['G_original'], cmap=self.custom_cmap, edgecolor='none', alpha=0.8, vmin=np.min(result['G_original']), vmax=np.max(result['G_original']))
             ax.view_init(elev=elevation, azim=angle)
             ax.set_xlabel(titles[0])
             ax.set_ylabel(titles[1])
@@ -269,12 +227,12 @@ class FreeEnergyLandscape:
         for i, (data, title) in enumerate(zip(data_list, titles)):
             # Normalização dos dados
             data_normalized = (data - np.min(data)) / (np.max(data) - np.min(data))
-            
+
             # Criação de subplots lado a lado
             ax = plt.subplot(1, len(data_list), i + 1)
             ax.hist(data_normalized, bins=self.bins, density=True, alpha=0.7, color='green')
             ax.set_title(f'Normalized {title}')
-            ax.set_xlabel('Normalized Value')
+            ax.set_xlabel('Value')
             if i == 0:  # Apenas o primeiro subplot terá o label do eixo Y
                 ax.set_ylabel('Frequency')
             ax.grid(True)
@@ -302,31 +260,17 @@ class FreeEnergyLandscape:
             data_normalized = (data - np.min(data)) / (np.max(data) - np.min(data))
             plt.plot(frames, data_normalized, label=title)
         plt.xlabel('Frame')
-        plt.ylabel('Normalized CV')
+        plt.ylabel('CV')
         plt.title('CV by Frame - Combined Normalized')
         plt.legend()
         plt.savefig('cv_by_frame_combined_normalized.png')
         plt.show()
 
 
-    def verify_input(self, data_path):
-        try:
-            data = np.loadtxt(data_path, dtype=float)
-            if data.shape[1] != 2:
-                raise ValueError("O arquivo de entrada deve ter exatamente duas colunas.")
-
-            frames = data[:, 0]
-            if not np.all(frames == np.arange(len(frames))):
-                raise ValueError("A primeira coluna deve conter valores inteiros sequenciais que representam os frames.")
-
-        except ValueError as e:
-            print(f"Erro na verificação do arquivo {data_path}: {e}")
-            sys.exit(1)
-
     @staticmethod
     def help():
         help_text = """
-        Usage: 
+        Usage:
             free_energy_landscape path/to/cv1_data.txt path/to/cv2_data.txt
 
         Optional arguments:
@@ -349,45 +293,107 @@ class FreeEnergyLandscape:
         #  - Use quotes for arguments that include spaces or special characters (e.g., --energy "[(0, 1), (1, 2)]").
         print(help_text)
 
+    def calculate_density_for_chunk(self, combined_data_chunk, bw_method):
+        # Esta função é uma versão simplificada que recalcula o kernel para cada chunk
+        kernel = gaussian_kde(combined_data_chunk.T, bw_method=bw_method)
+        density = np.exp(kernel.logpdf(combined_data_chunk.T))
+        return density
+
+    def calculate_and_save_free_energy(self, threshold=None):
+        import multiprocessing
+
+        # Verifica se os dados foram carregados
+        if self.proj1_data_original is None or self.proj2_data_original is None:
+            raise ValueError("Data not loaded. Run load_data first.")
+
+        # Carrega os índices dos frames
+        frames = np.loadtxt(self.cv1_path, usecols=[0], dtype=np.float64).astype(np.int64)
+
+        # Prepara os dados combinados
+        combined_data = np.vstack((self.proj1_data_original, self.proj2_data_original)).T
+
+        num_cpus = multiprocessing.cpu_count()
+        data_chunks = np.array_split(combined_data, num_cpus, axis=0)
+
+        # Recalcula a densidade de probabilidade para cada chunk de dados em paralelo
+        results = Parallel(n_jobs=num_cpus)(delayed(self.calculate_density_for_chunk)(chunk, self.kde_bandwidth) for chunk in data_chunks)
+        density = np.concatenate(results)
+        
+        # Calcula a energia livre
+        G = -self.kB * self.temperature * np.log(density)
+        G_min = np.min(G)
+        G_normalized = G - G_min
+
+        # Aplica o threshold, se especificado
+        if threshold is not None:
+            indices_below_threshold = G_normalized <= threshold
+            filtered_frames = frames[indices_below_threshold]
+            filtered_cv1 = self.proj1_data_original[indices_below_threshold]
+            filtered_cv2 = self.proj2_data_original[indices_below_threshold]
+            filtered_energy = G_normalized[indices_below_threshold]
+        else:
+            filtered_frames = frames
+            filtered_cv1 = self.proj1_data_original
+            filtered_cv2 = self.proj2_data_original
+            filtered_energy = G_normalized
+
+        # Prepara os dados para salvamento
+        data_to_save = np.column_stack((filtered_frames, filtered_cv1, filtered_cv2, filtered_energy))
+
+        # Ordena os dados pela energia
+        data_to_save = data_to_save[data_to_save[:, 3].argsort()]
+
+        # Salva os dados em um arquivo .tsv
+        filename = 'discrete_values_energy_frames.tsv'
+        np.savetxt(filename, data_to_save, delimiter='\t', fmt=['%d', '%.6f', '%.6f', '%.6f'], header='frame\tcv1\tcv2\tenergy', comments='')
+
+        print(f"Energy data saved in'{filename}'.")
 
     def main(self, energy_threshold, cv_names, n_angles, elevation, duration_per_frame):
-        
+
         # Verificar ambos os arquivos de entrada antes de carregar os dados
-        # self.verify_input(self.cv1_path)
-        # self.verify_input(self.cv2_path)
+
         self.load_data()
-        
+
+        print("Data loaded successfully!")
+        print(f"CV1: {self.cv1_path}, CV2: {self.cv2_path}\n")
+
+        print("Plotting histograms and free energy profiles...")
         self.boltzmann_inversion(
-            data_list=[self.proj1_data_original, self.proj2_data_original], 
-            titles=cv_names, 
+            data_list=[self.proj1_data_original, self.proj2_data_original],
+            titles=cv_names,
             threshold=energy_threshold
             )
-        
+
         self.plot_histogram(
-            data_list=[self.proj1_data_original, self.proj2_data_original], 
+            data_list=[self.proj1_data_original, self.proj2_data_original],
             titles=cv_names
             )
 
         self.cv_by_frame(
-            data_list=[self.proj1_data_original, self.proj2_data_original], 
+            data_list=[self.proj1_data_original, self.proj2_data_original],
             titles=cv_names
             )
+        
+        print("Successfully generated histograms and free energy profiles.\n")
 
+        print("Plotting the free energy landscape...")
         self.plot_energy_landscape(
             threshold=energy_threshold, titles=cv_names
             )
+        print("Paisagem de energia livre gerada com sucesso.\n")
 
+        print("Plotting the free energy landscape in 3D...")
         self.plot_3D_energy_landscape(
             threshold=energy_threshold, titles=cv_names
                                       )
-        
+        print("Plotting 3D gif...")
         self.create_3D_gif(
-            n_angles=n_angles, elevation=elevation, 
+            n_angles=n_angles, elevation=elevation,
             duration_per_frame=duration_per_frame,
             titles=cv_names
                            )
-        
-        # self.save_low_energy_points_to_tsv(threshold=energy_threshold) # save low energy frames to tsv
+        print("3D plot successfully generated.\n")
 
         # Após o uso final dos dados, limpe-os para liberar memória
         if hasattr(self, 'cached_results'):
@@ -448,13 +454,18 @@ def main():
         sys.exit(1)
 
     try:
-        fel = FreeEnergyLandscape(cv1_path, cv2_path, t, kB,  
-                                bins=bins_energy_histogram, 
+        fel = FreeEnergyLandscape(cv1_path, cv2_path, t, kB,
+                                bins=bins_energy_histogram,
                                 kde_bandwidth=kde_bandwidth_cv)
-        
-        fel.main(energy_threshold, cv_names=cv_names, 
-                 n_angles=n_angles, elevation=elevation, 
+
+        fel.main(energy_threshold, cv_names=cv_names,
+                 n_angles=n_angles, elevation=elevation,
                 duration_per_frame=duration_per_frame)
+        
+        if energy_threshold is not None:
+            print("Calculating and saving energy for each frame...")
+            fel.calculate_and_save_free_energy(threshold=energy_threshold)
+            print("Energy saved successfully!\n")
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
