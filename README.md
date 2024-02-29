@@ -73,7 +73,7 @@ Example with optional arguments:
 ```bash
 free_energy_landscape path/to/cv1_data.txt path/to/cv2_data.txt --names "CV1 (Angle)" "CV2 (Distance)" --energy 3.0 --discretize 1.0
 ```
-In this previous bash example we will display in the plots all points that exhibit energy ($<=3$) for every $1.0 KJ/mol$. And the axis title of each plot will be "CV1 (Angle)" and "CV2 (Distance)" respectively.
+In this previous bash example we will display in the plots all points that exhibit energy ($<=3 KJ/mol$) for every $1.0 KJ/mol$. And the axis title of each plot will be "CV1 (Angle)" and "CV2 (Distance)" respectively.
 
 ## Theoretical Background
 
