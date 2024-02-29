@@ -52,12 +52,13 @@ Ensure your data file is in the correct two-column format. Run the script with t
 ```bash
 free_energy_landscape path/to/cv1_data.txt path/to/cv2_data.txt
 ```
-```bash
 Optional Arguments:
 
+```bash
    --temperature           [int]       Simulation temperature in Kelvin (default: 300K)
    --kb                    [float]     Boltzmann constant in kJ/(mol·K) (default: 8.314e-3)
-   --energy                [float]     Energy, single value (default: None)
+   --energy                [float]     Energy (KJ/mol), single value (default: None)
+   --discretize            [float]     Discrete value (KJ/mol) for energy (default: None)
    --bins_energy_histogram [int]       Bins for energy histogram (default: 100)
    --kde_bandwidth         [float]     Bandwidth for kernel density estimation (default: None)
    --names                 [str] [str] Names for the collective variables (default: CV1, CV2)
@@ -65,6 +66,9 @@ Optional Arguments:
    --gif_elevation         [int]       Elevation angle for the 3D GIF (default: 10)
    --gif_duration          [float]     Duration per frame in the GIF in seconds (default: 0.1)
 ```
+
+Example with optional arguments:
+
 ```bash
 free_energy_landscape path/to/cv1_data.txt path/to/cv2_data.txt --names "CV1 (Angle)" "CV2 (Distance)" --energy 3
 ```
@@ -76,25 +80,23 @@ The free energy landscape is a conceptual and computational tool used to underst
 
 ### Collective Variables (CVs)
 
+Collective Variables (CVs) are a set of coordinates that describe the macroscopic state of a system. They are used to reduce the complexity of molecular systems by focusing on the relevant degrees of freedom. Examples include the analysis of principal components (PCA), the distance between two atoms, angles, dihedrals, and more complex descriptors. Below are examples of commonly used CVs and their mathematical formulations.
 
-Collective Variables (CVs) are a set of coordinates that describe the macroscopic state of a system. They are used to reduce the complexity of molecular systems by focusing on the relevant degrees of freedom. Examples include the distance between two atoms, angles, dihedrals, and more complex descriptors. 
+The inclusion of Principal Component Analysis (PCA) as an example of CVs is crucial for understanding the dimensional reduction in complex systems. PCA identifies the directions (principal components) along which the variance in the data is maximized. In the context of CVs, the first two principal components, denoted as $PC_1$ and $PC_2$, serve as collective variables that capture the most significant modes of variation within the system. Mathematically, PCA transforms the original data into a new set of variables, the principal components, which are linear combinations of the original variables with weights given by the eigenvectors of the data's covariance matrix.
 
-The use of distance and angle as CVs in this study serves merely as an example to illustrate the tool's capabilities. However, it's important to note that the input can be any file containing two columns: the first for frames and the second for the value of the collective variable. This flexibility allows the tool to be applicable to a wide range of studies involving different types of collective variables
+PCA is an algebraic procedure that transforms a number of (possibly) correlated variables into a (smaller) number of uncorrelated variables called principal components. This transformation is defined in such a way that the first principal component has the highest possible variance (it accounts for as much of the variability in the data as possible), and each succeeding component in turn has the highest variance possible under the constraint that it is orthogonal to (i.e., uncorrelated with) the preceding components. The components are orthogonal because they are the eigenvectors of the data's covariance matrix $\mathbf{C}$, which is a symmetric matrix.
 
-CVs in biomolecular systems are mathematically represented as functions of the atomic coordinates. These functions are designed to capture the essential features of the system's configuration that are relevant to its macroscopic properties or behaviors. Below are examples of commonly used CVs and their mathematical formulations:
+So, $\mathbf{X}$ is a $n \times p$ data matrix representing $n$ observations with $p$ variables, the goal of PCA is to transform $\mathbf{X}$ into a new coordinate system through a linear transformation that maps $\mathbf{X}$ onto a new set of variables, the principal components (PCs), which are linear combinations of the original variables. This is achieved by eigendecomposition of the covariance matrix $\mathbf{C} = \frac{1}{n-1} \mathbf{X}^T\mathbf{X}$, or more commonly through singular value decomposition (SVD) of $\mathbf{X}$.
 
-1. **Distance**: The distance $d$ between two atoms $i$ and $j$ with positions $\vec{r}_i$ and $\vec{r}_j$ can be calculated using the Euclidean distance formula:
+Geometrically, PCA seeks the line (in the case of a single principal component) or hyperplane (in the case of multiple principal components) that best captures the distribution of the data in a high-dimensional space. The first principal component is the direction along which the projection of the data points has the largest variance. This direction corresponds to the eigenvector of the covariance matrix associated with the largest eigenvalue. The second principal component is orthogonal to the first and represents the direction of the next highest variance, corresponding to the eigenvector associated with the second largest eigenvalue, and so on.
 
-   First, determine the position vectors of atoms $i$ and $j$:
-   $$\vec{r}_i = (x_i, y_i, z_i)$$
-   $$\vec{r}_j = (x_j, y_j, z_j)$$
+1. **Principal Component Analysis (PCA)**: Can be expressed as:
+$$PC_k = \sum_{i=1}^{p} a_{ki}X_i$$
+where $PC_k$ is the $k_{th}$ principal component, $X_i$ are the original variables, and $a_{ki}$ are the coefficients (loadings) for the $k_{th}$ principal component, given by the $k_{th}$ eigenvector of the covariance matrix $\mathbf{C}$. The transformation can be represented in matrix form as:
+$$\mathbf{PC} = \mathbf{X}\mathbf{A}$$
+where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the original data matrix (centered or standardized, if necessary), and $\mathbf{A}$ is the matrix whose columns are the eigenvectors of $\mathbf{C}$.
 
-   Then, calculate the distance $d$ as:
-   $$d = |\vec{r}_i - \vec{r}_j| = \sqrt{(x_i - x_j)^2 + (y_i - y_j)^2 + (z_i - z_j)^2}$$
-
-   - $\vec{r}_i$ and $\vec{r}_j$ are the position vectors of atoms $i$ and $j$, respectively.
-   - $(x_i, y_i, z_i)$ and $(x_j, y_j, z_j)$ denote the Cartesian coordinates of atoms $i$ and $j$.
-   - $|\vec{r}_i - \vec{r}_j|$ represents the magnitude of the vector difference between $\vec{r}_i$ and $\vec{r}_j$, giving the direct distance between the two atoms.
+This algebraic and geometric perspective highlights the essence of PCA as a method for identifying the directions (in the space of the original variables) that maximize the variance of the projected data, thereby reducing its dimensionality while preserving as much of the original data's variation as possible.
 
 2. **Angle**: The angle $\theta$ formed by three atoms $i$, $j$, and $k$, where $j$ is the vertex, can be calculated using the dot product:
 
@@ -110,6 +112,22 @@ CVs in biomolecular systems are mathematically represented as functions of the a
    - $\cdot$ denotes the dot product between the vectors $\vec{r}_ji$ and $\vec{r}_jk$.
    - $|\vec{r}_ji|$ and $|\vec{r}_jk|$ represent the magnitudes of the vectors $\vec{r}_ji$ and $\vec{r}_jk$, respectively.
    - $\arccos$ is the inverse cosine function, used to find the angle $\theta$ from the cosine value.
+  
+
+3. **Distance**: The distance $d$ between two atoms $i$ and $j$ with positions $\vec{r}_i$ and $\vec{r}_j$ can be calculated using the Euclidean distance formula:
+
+   First, determine the position vectors of atoms $i$ and $j$:
+   $$\vec{r}_i = (x_i, y_i, z_i)$$
+   $$\vec{r}_j = (x_j, y_j, z_j)$$
+
+   Then, calculate the distance $d$ as:
+   $$d = |\vec{r}_i - \vec{r}_j| = \sqrt{(x_i - x_j)^2 + (y_i - y_j)^2 + (z_i - z_j)^2}$$
+
+   - $\vec{r}_i$ and $\vec{r}_j$ are the position vectors of atoms $i$ and $j$, respectively.
+   - $(x_i, y_i, z_i)$ and $(x_j, y_j, z_j)$ denote the Cartesian coordinates of atoms $i$ and $j$.
+   - $|\vec{r}_i - \vec{r}_j|$ represents the magnitude of the vector difference between $\vec{r}_i$ and $\vec{r}_j$, giving the direct distance between the two atoms.
+
+Following PCA, the use of distance and angle as CVs in this study serves as an example to illustrate the tool's capabilities. However, it's important to note that the input can be any file containing two columns: the first for frames and the second for the value of the collective variable. This flexibility allows the tool to be applicable to a wide range of studies involving different types of collective variables.
 
 These representations allow for a simplified description of the system's state, facilitating the study of its behavior and properties through the manipulation of a reduced set of variables rather than the full set of atomic coordinates.
 
@@ -200,7 +218,7 @@ The `FreeEnergyLandscape` class generates three key visualizations to aid in the
 
 This updated figure now integrates the normalized free energy profiles for both CV1 (Angle) and CV2 (Distance) in a single, unified visualization. This enhancement allows for a direct comparison between the two collective variables, illuminating their unique energy landscapes and pinpointing low-energy regions across specified energy threshold ranges.
 
-![Alt text da image](https://raw.githubusercontent.com/sulfierry/MolecularModeling/main/FreeEnergyLandscape/1_Combined_Free_Energy_Profile_Normalized.png)
+![Alt text da image](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/1_Combined_Free_Energy_Profile_Normalized.png)
 
 - **X-Axis**: Displays both CV1 and CV2, with CV1 representing an angle and CV2 denoting distance in Ångströms, facilitating a comprehensive view of the system's energetics.
 - **Y-Axis**: Represents the normalized free energy, derived from the probability distributions of CV1 and CV2 using the Boltzmann equation.
@@ -208,7 +226,7 @@ This updated figure now integrates the normalized free energy profiles for both 
 
 ### Figure 2: Histograms of Normalized CV1 and CV2 Values Side by Side
 
-![Alt text da image](https://raw.githubusercontent.com/sulfierry/MolecularModeling/main/FreeEnergyLandscape/2_histograms_normalized_side_by_side.png)
+![Alt text da image](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/2_histograms_normalized_side_by_side.png)
 
 - **Visualization**: Two histograms placed side by side, one for CV1 (Angle) and the other for CV2 (Distance), each showing the normalized value distribution. This format allows for an easy comparison of the two variables' behaviors and predominant states within the simulation.
 
@@ -217,7 +235,7 @@ This updated figure now integrates the normalized free energy profiles for both 
 
 This figure innovatively plots the values of CV1 (Angle) and CV2 (Distance) against simulation frames in the same image. It offers insights into how the values of these collective variables evolve over time, shedding light on the dynamic aspects of the system's behavior.
 
-![Alt text da image](https://raw.githubusercontent.com/sulfierry/MolecularModeling/main/FreeEnergyLandscape/3_cv_by_frame_combined_normalized.png)
+![Alt text da image](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/3_cv_by_frame_combined_normalized.png)
 
 
 - **X-Axis**: Represents the simulation frames, providing a temporal dimension to the analysis.
@@ -228,7 +246,7 @@ This figure innovatively plots the values of CV1 (Angle) and CV2 (Distance) agai
 
 The third figure combines both CV1 and CV2 to produce a two-dimensional free energy landscape, offering a comprehensive view of the system's energetics over the considered collective variables.
 
-![Alt text da image](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/fel_angle_distance.png?raw=true)
+![Alt text da image](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/fel_angle_distance.png)
 
 - **X-Axis**: CV1, representing an angle, with the same labeling as in Figure 1 (left).
 - **Y-Axis**: CV2, representing a distance, with the same labeling as in Figure 1 (right).
@@ -238,7 +256,7 @@ The third figure combines both CV1 and CV2 to produce a two-dimensional free ene
 
 This figure provides a three-dimensional visualization of the free energy landscape, combining both collective variables, CV1 and CV2, along with the calculated free energy values to offer a dynamic perspective on the system's energetics.
 
-![Alt Text](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/energy_landscape_3D.gif?raw=true)
+![Alt Text](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/energy_landscape_3D.gif)
 
 
 - **X-Axis**: CV1, representing an angle, with the same labeling as in Figure 4.
@@ -250,3 +268,125 @@ This figure provides a three-dimensional visualization of the free energy landsc
 ## Interpretation
 
 Together, these figures provide a multi-faceted view of the molecular system's free energy landscape. Analyzing these visualizations helps in understanding how variations in critical structural parameters (angles and distances) influence the stability and dynamics of the system, which is vital for predicting reaction pathways, designing drugs, and engineering materials with desired properties.
+
+
+# Comparative Analysis of Free Energy Calculation Methods
+
+This document provides a detailed mathematical comparison of free energy calculation and interpolation methods between the custom Python script `freeEnergyLandscape.py` and the method of GROMACS tools `gmx_sham` and `gmx_wham`.
+
+# GMX SHAM Mechanism Description
+
+The `gmx_sham` tool is part of the GROMACS suite, designed to analyze free energy landscapes from simulation data. The core functionality revolves around creating multidimensional histograms from the provided data and calculating the free energy landscape. Here's a detailed breakdown of the process, including the improved explanation of "accumulated probability of all data points":
+
+## Data Preparation
+
+1. **Extremes Determination**: For each eigenvector, the code calculates minimum and maximum values across all data points, adding a small buffer to ensure all data is encompassed (`find_extremes` function).
+
+2. **Normalization and Volume Correction**: Data undergo normalization and volume correction if necessary, based on user-specified dimensions. This step adjusts the probability calculations for spatial dimensions, correcting for volume effects that increase with distance in 2D and 3D spaces, as seen in the `correct_for_volume_effects` method.
+
+## Histogram Creation and Free Energy Calculation
+
+1. **Binning**: Data is sorted into multidimensional bins, each representing specific intervals of the eigenvectors (`binning_data` function). Points are allocated to bins based on their eigenvector values.
+
+2. **Accumulated Probability Calculation**: The accumulated probability ($P_{acum}(bin)$) for each bin is calculated as the number of data points within the bin ($(N_{bin})$) divided by the total number of data points ($(N_{total})$), reflecting the proportion of occurrences for each bin relative to the entire dataset.
+
+$$P_{acum}(bin) = \frac{N_{bin}}{N_{total}}$$
+
+3. **Free Energy Calculation**: Free energy ($G$) for each bin is determined using the inverse Boltzmann relation, where the accumulated probability informs the energy level:
+
+$$G(bin) = -kT \ln(P_{acum}(bin))$$
+
+   Here, ($k$) is Boltzmann's constant, and ($T$) is the system's temperature. This step is executed within the `calculate_free_energy` method.
+
+4. **Probability Normalization and Energy Adjustment**: Finally, the probability in each bin is normalized, and the free energy values are adjusted so the minimum free energy across the landscape is set to zero, facilitating easier interpretation and visualization.
+
+
+# GMX WHAM Mechanism Description
+
+The `gmx_wham` tool within the GROMACS suite utilizes the Weighted Histogram Analysis Method (WHAM) to derive free energy landscapes from multiple simulations. This sophisticated statistical approach combines data from various histograms to estimate the system's free energy landscape accurately. Additionally, `gmx_wham` employs linear interpolation for handling tabulated potentials. Below is a detailed explanation of WHAM's process, incorporating the clarification regarding interpolation methods:
+
+## Data Preparation and Histogram Creation
+
+1. **Histogram Generation**: Each simulation dataset contributes a histogram based on a specific reaction coordinate, representing the frequency distribution of system states across the sampled parameter space.
+
+2. **Bias Correction**: To effectively explore specific regions of the parameter space, simulations often apply a bias. WHAM corrects these biases across all histograms, ensuring equitable contributions to the final analysis.
+
+## Statistical Combination and Free Energy Calculation
+
+WHAM utilizes a statistical method to combine histograms and derive the free energy landscape:
+
+1. **Combining Histograms**: The method combines biased histograms using iteratively adjusted weights. Each histogram's weight reflects its contribution to the overall free energy calculation, considering the applied bias during simulation.
+
+2. **Iterative Solution**: WHAM solves a set of self-consistent equations to find the weights that maximize the likelihood of the combined histogram data:
+
+   - Let $N_i(j)$ be the number of counts in the $j^{th}$ bin of the $i^{th}$ histogram, with $n_i$ total observations and a biasing energy $U_i(j)$.
+   - The unbiased probability distribution $P(j)$ for the $j^{th}$ bin is estimated by:
+
+$$P(j) = \frac{\sum_{i} N_i(j)}{\sum_{i} n_i \exp\left[-\beta (U_i(j) - F_i)\right]}$$
+
+Here, $\beta = 1/(k_BT)$, $k_B$ is Boltzmann's constant, $T$ is the temperature, and $F_i$ is the iteratively adjusted free energy of the $i^{th}$ simulation.
+
+3. **Free Energy Landscape**: The free energy $G$ for each state is calculated from the probability distribution $P(j)$:
+
+$$G(j) = -k_BT \ln(P(j))$$
+
+   This reveals the energetically favorable states and barriers between them.
+
+## Linear Interpolation for Tabulated Potentials
+
+In addition to the statistical combination of histograms, `gmx_wham` uses linear interpolation within the `tabulated_pot` function for tabulated potentials. This method estimates potential energy values at intermediate distances, providing a continuous potential energy landscape.
+
+However, this linear interpolation method is specifically applied to the scenario of dealing with tabulated potentials and does not directly influence the primary WHAM algorithm's statistical combination of histograms for free energy calculation. The WHAM methodology itself does not inherently use linear interpolation as part of its core algorithm for combining histograms or calculating the free energy landscape. Instead, WHAM relies on a statistical approach to optimally combine data from multiple biased simulations to reconstruct the unbiased free energy profile.
+
+
+## Free Energy Landscape Calculation with Python Script
+
+This document outlines the use of Kernel Density Estimation (KDE) and Boltzmann Inversion by the `freeEnergyLandscape.py` script to estimate the free energy landscape of a system from its collective variables.
+
+### Kernel Density Estimation (KDE) Method
+
+KDE smooths the distribution of collective variables to enhance the estimation of probability densities. It employs Scott's rule for bandwidth selection, ensuring an appropriately smooth density estimate for the data's scale.
+
+$$
+\text{Bandwidth (Scott's Rule)} = \sigma \cdot n^{-1/5}
+$$
+
+- $\sigma$ is the standard deviation of the sample.
+- $n$ is the sample size.
+
+KDE for a set of points is given by:
+
+$$
+\hat{f}(x) = \frac{1}{n \cdot h} \sum_{i=1}^{n} K\left( \frac{x - x_i}{h} \right)
+$$
+
+- $n$ is the number of points
+- $K$ is the kernel function, typically Gaussian.
+- $h$ is the bandwidth.
+
+### Boltzmann Inversion
+
+The free energy $G(x)$ of a state is calculated from the probability density $\hat{f}(x)$, obtained via KDE:
+
+$$
+G(x) = -k_BT \ln(\hat{f}(x))
+$$
+
+- $k_B$ is the Boltzmann constant.
+- $T$ is the temperature.
+
+### Probability Normalization
+
+To ensure accurate energy calculation, the probability densities are normalized over the entire range of possible values, ensuring they sum to one across the configurational space:
+
+$$
+\int_{-\infty}^{\infty} \hat{f}(x) \, dx = 1
+$$
+
+### Interpolation
+
+The smoothly interpolated probability density function provided by KDE enables calculating the free energy landscape over a continuous range of collective variable values, highlighting energetically favorable states and barriers between them.
+
+## Conclusion
+
+In conclusion, while `gmx_sham` and `gmx_wham` are powerful tools for free energy analysis within the GROMACS environment, `freeEnergyLandscape.py` offers a more user-friendly and customizable approach, particularly beneficial for those seeking immediate visualization and flexible data analysis options.
