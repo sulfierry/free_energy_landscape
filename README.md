@@ -70,9 +70,9 @@ Optional Arguments:
 Example with optional arguments:
 
 ```bash
-free_energy_landscape path/to/cv1_data.txt path/to/cv2_data.txt --names "CV1 (Angle)" "CV2 (Distance)" --energy 3
+free_energy_landscape path/to/cv1_data.txt path/to/cv2_data.txt --names "CV1 (Angle)" "CV2 (Distance)" --energy 3 --discretize 0.5
 ```
-
+In this previous bash example we will display in the plots all points that exhibit energy $<=3$ for every $1.0 KJ/mol$. And the axis title of each plot will be "CV1 (Angle)" and "CV2 (Distance)" respectively.
 
 ## Theoretical Background
 
@@ -229,7 +229,7 @@ This figure innovatively plots the values of CV1 (Angle) and CV2 (Distance) agai
 
 The third figure combines both CV1 and CV2 to produce a two-dimensional free energy landscape, offering a comprehensive view of the system's energetics over the considered collective variables.
 
-![Alt text da image](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/fel_angle_distance.png)
+![Alt text da image](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/4_Free_energy_landscape.png)
 
 - **X-Axis**: CV1, representing an angle, with the same labeling as in Figure 1 (left).
 - **Y-Axis**: CV2, representing a distance, with the same labeling as in Figure 1 (right).
@@ -239,7 +239,7 @@ The third figure combines both CV1 and CV2 to produce a two-dimensional free ene
 
 This figure provides a three-dimensional visualization of the free energy landscape, combining both collective variables, CV1 and CV2, along with the calculated free energy values to offer a dynamic perspective on the system's energetics.
 
-![Alt Text](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/energy_landscape_3D.gif)
+![Alt Text](https://github.com/sulfierry/MolecularModeling/blob/main/FreeEnergyLandscape/5_3D_landscape.png)
 
 
 - **X-Axis**: CV1, representing an angle, with the same labeling as in Figure 4.
