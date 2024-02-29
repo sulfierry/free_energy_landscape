@@ -137,30 +137,13 @@ This statistical method is crucial for estimating the probability density functi
 
 The `gaussian_kde` leverages a Gaussian (normal) distribution, placing it at each point in the dataset and summing these distributions to approximate the overall data's PDF. This technique is adept at capturing the underlying structure of the data, providing a smooth, continuous representation of the free energy landscape. The smoothness of the KDE is controlled by the bandwidth parameter, which determines the width of the Gaussian kernels used.
 
-Mathematically, the density estimation at a point $`x`$ is calculated as follows:
+The KDE for a set of ($n$) points (${x_i}$) can be mathematically represented as: 
+$$\hat{f}(x) = \frac{1}{n \cdot h} \sum_{i=1}^{n} K\left( \frac{x - x_i}{h} \right)$$ 
+where $\hat{f}(x)$ is the estimated density at point ($x$), ($K$) is the kernel function (e.g., Gaussian), and ($h$) is the bandwidth, a parameter that controls the smoothness of the density estimate. 
 
-$$\ f(x) = \frac{1}{n \cdot h} \sum_{i=1}^{n} K(u) \$$   
-
-where:
-- $K(u)$ represents the Gaussian kernel function
-
-$$ K(u) = \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}u^2} $$
-
-- $u$ is the normalized distance
-
-$$ u = \frac{x - x_i}{h} $$
-
-- $n$ is the number of data points
-- $h$ is the bandwidth
-- $x$ is where the density is being estimated
-- $x_i$ are the data points
-  
-note that:
-- $u^2$ is the square of this normalized distance, which serves to weight the contribution of each data point $x_i$ to the density estimate at $x$, based on how far $x_i$ is from $x$, adjusted by the bandwidth $h$.
-- $e^{-\frac{1}{2}u^2}$ decreases rapidly as $u$ increases, meaning that points further away from $x$ will have less influence on the density estimate at $x$.
-- $\frac{1}{\sqrt{2\pi}}$ is a normalization term that ensures the Gaussian kernel function integrates to $1$, keeping it as a valid probability distribution.
-
-In the context of KDE the variable $u$ is utilized within the Gaussian kernel function $K$, which is a probability density function. Thus, $u$ is crucial in determining how the distance between $x$ and the data points $x_i$ affects the density estimate at $x$, with the bandwidth $h$ controlling the sensitivity of this influence.
+The conversion from the estimated density to free energy is typically done using the relation: 
+$$G(x) = -k_B T \ln(\hat{f}(x))$$ 
+where $G(x)$ is the free energy at point $x$, $k_B$ is the Boltzmann constant, and $T$ is the temperature. 
 
 The Gaussian KDE method provides a sophisticated approach to model the complex free energy landscapes encountered in molecular dynamics studies. It enables researchers to visualize the distribution of energy states without the constraints of parametric models, offering insights into molecular stability, transitions, and the energetics of molecular interactions.
 
