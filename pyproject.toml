@@ -17,8 +17,8 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Chemistry",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
-    "Topic :: Scientific/Engineering :: Molecular Dynamics",
-]
+    "Topic :: Scientific/Engineering :: Physics",
+    ]
 keywords = ["Free energy landscape", "Molecular Dynamics", "Collective variables", "Boltzmann equation"]
 dependencies = [
     "numpy>=1.23.5, <2.0.0",
