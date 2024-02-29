@@ -17,7 +17,7 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Chemistry",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
-    "Topic :: Scientific/Engineering :: Free Energy Landscape",
+    "Topic :: Scientific/Engineering :: Molecular Dynamics",
 ]
 keywords = ["Free energy landscape", "Molecular Dynamics", "Collective variables", "Boltzmann equation"]
 dependencies = [
