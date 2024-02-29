@@ -28,11 +28,12 @@ This project relies on several key Python libraries for numerical computations, 
 - **ImageIO** (2.34.0): A library for reading and writing a wide range of image, video, scientific, and volumetric data formats. It is used in this project for creating and manipulating images and GIFs.
 - **Matplotlib** (3.7.4): A comprehensive library for creating static, animated, and interactive visualizations in Python. It is used for plotting the free energy landscapes.
 - **SciPy** (1.10.1): An open-source Python library used for scientific computing and technical computing. It contains modules for optimization, linear algebra, integration, interpolation, special functions, FFT, signal and image processing, and more.
+- **Joblib** (1.3.2): A versatile library optimized for fast and easy saving and loading of Python objects, making it particularly useful for large data that does not fit into memory. In the context of this project, Joblib is instrumental in facilitating efficient parallel computations and optimizing performance when processing and analyzing large datasets or performing computationally intensive tasks like kernel density estimations and free energy calculations across multiple processors.
 
 To install these libraries, you can use the following command:
 
 ```bash
-pip install numpy==1.23.5 imageio==2.34.0 matplotlib==3.7.4 scipy==1.10.1
+pip install numpy==1.23.5 imageio==2.34.0 matplotlib==3.7.4 scipy==1.10.1 joblib==1.3.2
 ```
 These dependencies also are listed in the `requirements.txt` file. To install them, run the following command in your terminal:
 
