@@ -91,8 +91,6 @@ where $PC_k$ is the $k_{th}$ principal component, $X_i$ are the original variabl
 $$\mathbf{PC} = \mathbf{X}\mathbf{A}$$
 where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the original data matrix (centered or standardized, if necessary), and $\mathbf{A}$ is the matrix whose columns are the eigenvectors of $\mathbf{C}$.
 
-This algebraic and geometric perspective highlights the essence of PCA as a method for identifying the directions (in the space of the original variables) that maximize the variance of the projected data, thereby reducing its dimensionality while preserving as much of the original data's variation as possible.
-
 2. **Angle**: The angle $\theta$ formed by three atoms $i$, $j$, and $k$, where $j$ is the vertex, can be calculated using the dot product:
 
    First, determine the vectors $\vec{r}_ji$ and $\vec{r}_jk$:
