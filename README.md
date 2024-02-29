@@ -18,7 +18,7 @@ This tool is designed to analyze and visualize the free energy landscape from mo
 
 - **3D Free Energy Landscape**: This feature constructs a three-dimensional representation of the free energy landscape, complemented by an animated GIF. This immersive visualization affords a dynamic and comprehensive view of the energy landscape, enhancing the interpretation of the system's energetics from multiple angles and dimensions.
 
-- **Low Energy Points Identification**: This functionality ($--energy$) identifies and marks points falling below specific energy ($KJ/mol$) thresholds on the landscape. This is instrumental in pinpointing regions associated with stable conformations and significant for understanding the energetics that govern molecular stability and transitions.
+- **Low Energy Points Identification**: This functionality ($--energy$ and $--discretize$) identifies and marks points falling below specific energy ($KJ/mol$) thresholds on the landscape. This is instrumental in pinpointing regions associated with stable conformations and significant for understanding the energetics that govern molecular stability and transitions.
 
 ## Required Libraries
 
