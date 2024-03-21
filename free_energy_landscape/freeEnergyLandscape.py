@@ -17,7 +17,9 @@ class FreeEnergyLandscape:
     def __init__(self, cv1_path, cv2_path, 
                  temperature, boltzmann_constant, 
                  bins=100, kde_bandwidth=None, 
-                 cv_names=['CV1', 'CV2'], discrete=None):
+                 cv_names=['CV1', 'CV2'], discrete=None,
+                 xlim_inf=None, xlim_sup=None, ylim_inf=None, ylim_sup=None):  
+
         
         self.cv1_path = cv1_path
         self.cv2_path = cv2_path
@@ -51,7 +53,7 @@ class FreeEnergyLandscape:
             'purple', 
             'darkorange', 
             'green', 
-            'orange', 
+            'lightgrey', 
             'red',
             'magenta',
             'mediumorchid',
@@ -73,6 +75,12 @@ class FreeEnergyLandscape:
             'd'
             ]
 
+        # Novos atributos para limites dos eixos
+        self.xlim_inf = xlim_inf
+        self.xlim_sup = xlim_sup
+        self.ylim_inf = ylim_inf
+        self.ylim_sup = ylim_sup
+
     def load_data(self):
         # Carrega os dados das variáveis coletivas e os índices dos frames
         self.proj1_data_original = np.loadtxt(self.cv1_path, usecols=[1])
@@ -88,18 +96,25 @@ class FreeEnergyLandscape:
             kernel_original = gaussian_kde(values_original.T, bw_method=self.kde_bandwidth)
         else:
             kernel_original = gaussian_kde(values_original.T)
-        X_original, Y_original = np.mgrid[data[:, 0].min():data[:, 0].max():100j,
-                                          data[:, 1].min():data[:, 1].max():100j]
+
+        # Ajusta a geração da grade para respeitar os limites especificados
+        x_min = self.xlim_inf if self.xlim_inf is not None else data[:, 0].min()
+        x_max = self.xlim_sup if self.xlim_sup is not None else data[:, 0].max()
+        y_min = self.ylim_inf if self.ylim_inf is not None else data[:, 1].min()
+        y_max = self.ylim_sup if self.ylim_sup is not None else data[:, 1].max()
+        
+        X_original, Y_original = np.mgrid[x_min:x_max:100j, y_min:y_max:100j]
         positions_original = np.vstack([X_original.ravel(), Y_original.ravel()])
         Z_original = np.reshape(kernel_original(positions_original).T, X_original.shape)
         G_original = -self.kB * self.temperature * np.log(Z_original)
         G_original = np.clip(G_original - np.min(G_original), 0, 25)
 
         self.cached_results = {'X_original': X_original, 
-                               'Y_original': Y_original, 
-                               'G_original': G_original
-                               }
+                            'Y_original': Y_original, 
+                            'G_original': G_original
+                            }
         return self.cached_results
+
 
     def boltzmann_inversion(self, data_list, titles, threshold=None):
 
@@ -230,7 +245,13 @@ class FreeEnergyLandscape:
         plt.show()
 
 
-    def plot_energy_landscape(self, threshold, titles=['CV1', 'CV2']):
+    def plot_energy_landscape(self, threshold, titles=['CV1', 'CV2'], xlim_inf=None, xlim_sup=None, ylim_inf=None, ylim_sup=None):
+
+        if xlim_inf is not None and xlim_sup is not None:
+            plt.xlim(xlim_inf, xlim_sup)
+        if ylim_inf is not None and ylim_sup is not None:
+            plt.ylim(ylim_inf, ylim_sup)
+
         data = np.hstack((self.proj1_data_original[:, None], self.proj2_data_original[:, None]))
         result = self.calculate_free_energy(data)
         plt.figure(figsize=(8, 6))
@@ -270,6 +291,8 @@ class FreeEnergyLandscape:
 
         cbar = plt.colorbar(cont)
         cbar.set_label('Free energy (kJ/mol)')
+        plt.xlim(self.xlim_inf, self.xlim_sup)
+        plt.ylim(self.ylim_inf, self.ylim_sup)
         plt.xlabel(titles[0])
         plt.ylabel(titles[1])
         plt.title('Free Energy Landscape')
@@ -277,7 +300,7 @@ class FreeEnergyLandscape:
         plt.savefig('Free_energy_landscape_with_discrete_points.png')
         plt.show()
 
-    def plot_3D_energy_landscape(self, threshold=None, titles=['CV1', 'CV2']):
+    def plot_3D_energy_landscape(self, threshold=None, titles=['CV1', 'CV2'], xlim_inf=None, xlim_sup=None, ylim_inf=None, ylim_sup=None):
         data = np.hstack((self.proj1_data_original[:, None], self.proj2_data_original[:, None]))
         result = self.calculate_free_energy(data)
 
@@ -321,7 +344,9 @@ class FreeEnergyLandscape:
                             )
         
         ax.legend(loc='upper left', bbox_to_anchor=(1.05, 1), title="Energy intervals")
-
+        
+        plt.xlim(self.xlim_inf, self.xlim_sup)
+        plt.ylim(self.ylim_inf, self.ylim_sup)
         plt.tight_layout()
         plt.show()
 
@@ -335,10 +360,7 @@ class FreeEnergyLandscape:
             ax.scatter(X_flat[energy_mask], Y_flat[energy_mask], G_flat[energy_mask], color=color, s=20, label=label)
 
 
-    def create_3D_gif(self, gif_filename='energy_landscape_3D.gif', 
-                      n_angles=10, elevation=15, 
-                      duration_per_frame=0.01, 
-                      titles=['CV1', 'CV2']):
+    def create_3D_gif(self, gif_filename='energy_landscape_3D.gif', n_angles=10, elevation=15, duration_per_frame=0.01, titles=['CV1', 'CV2'], xlim_inf=None, xlim_sup=None, ylim_inf=None, ylim_sup=None):
         
         temp_dir = tempfile.mkdtemp()  # Cria um diretório temporário para armazenar os frames
         filenames = []
@@ -415,9 +437,13 @@ class FreeEnergyLandscape:
             --gif_angles            [int]       Angles for 3D GIF rotation (default: 10)
             --gif_elevation         [int]       Elevation angle for the 3D GIF (default: 10)
             --gif_duration          [float]     Duration per frame in the GIF in seconds (default: 0.1)
+            --xlim_inf              [float]     Lower limit for the x-axis (default: None)
+            --xlim_sup              [float]     Upper limit for the x-axis (default: None)
+            --ylim_inf              [float]     Lower limit for the y-axis (default: None)
+            --ylim_sup              [float]     Upper limit for the y-axis (default: None)
 
         Example:
-            free_energy_landscape cv1.txt cv2.txt --names "Angle (CV1)" "Distance (CV2)"  --energy 3.0 --discretize 1.0
+            freeEnergyLandscape.py proj1Out.txt proj2Out.txt --energy 0.1 --discretize 0.1 --xlim_inf 27 --xlim_sup 130 --ylim_inf 3 --ylim_sup 37 
 
         """
         print(help_text)
@@ -547,6 +573,8 @@ def main():
     elevation = 10              # --gif_elevation         [int]
     duration_per_frame = 0.1    # --gif_duration          [float]
     discrete_val = None         # --discrete              [float]
+    xlim_inf = xlim_sup = ylim_inf = ylim_sup = None  # Inicialização padrão
+
 
     if len(sys.argv) >= 3:
         cv1_path, cv2_path = sys.argv[1], sys.argv[2]
@@ -585,6 +613,20 @@ def main():
             elif key == "--gif_duration":
                 duration_per_frame = float(sys.argv[i + 1])
                 i += 2
+
+            elif key == "--xlim_inf":
+                xlim_inf = float(sys.argv[i + 1])
+                i += 2
+            elif key == "--xlim_sup":
+                xlim_sup = float(sys.argv[i + 1])
+                i += 2
+            elif key == "--ylim_inf":
+                ylim_inf = float(sys.argv[i + 1])
+                i += 2
+            elif key == "--ylim_sup":
+                ylim_sup = float(sys.argv[i + 1])
+                i += 2
+
             else:
                 print(f"Unrecognized option: {key}")
                 sys.exit(1)
@@ -594,10 +636,12 @@ def main():
 
     try:
         fel = FreeEnergyLandscape(cv1_path, cv2_path, t, kB, 
-                                  bins=bins_energy_histogram, 
-                                  kde_bandwidth=kde_bandwidth_cv, 
-                                  cv_names=cv_names, 
-                                  discrete=discrete_val)
+                                bins=bins_energy_histogram, 
+                                kde_bandwidth=kde_bandwidth_cv, 
+                                cv_names=cv_names, 
+                                discrete=discrete_val,
+                                xlim_inf=xlim_inf, xlim_sup=xlim_sup, 
+                                ylim_inf=ylim_inf, ylim_sup=ylim_sup)
 
         fel.main(energy_threshold, cv_names=cv_names, 
                  n_angles=n_angles, elevation=elevation, 
