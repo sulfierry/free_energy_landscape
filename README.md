@@ -141,7 +141,9 @@ $$\hat{f}(x) = \frac{1}{n \cdot h} \sum_{i=1}^{n} K\left( \frac{x - x_i}{h} \rig
 where $\hat{f}(x)$ is the estimated density at point ($x$), ($K$) is the kernel function (e.g., Gaussian), and ($h$) is the bandwidth, a parameter that controls the smoothness of the density estimate. 
 
 The conversion from the estimated density to free energy is typically done using the relation: 
+
 $$G(x) = -k_B T \ln(\hat{f}(x))$$ 
+
 where $G(x)$ is the free energy at point $x$, $k_B$ is the Boltzmann constant, and $T$ is the temperature. 
 
 The Gaussian KDE method provides a sophisticated approach to model the complex free energy landscapes encountered in molecular dynamics studies. It enables researchers to visualize the distribution of energy states without the constraints of parametric models, offering insights into molecular stability, transitions, and the energetics of molecular interactions.
