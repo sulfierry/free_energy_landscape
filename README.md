@@ -90,7 +90,9 @@ Geometrically, PCA seeks the line (in the case of a single principal component) 
 $$PC_k = \sum_{i=1}^{p} a_{ki}X_i$$
 
 where $PC_k$ is the $k_{th}$ principal component, $X_i$ are the original variables, and $a_{ki}$ are the coefficients (loadings) for the $k_{th}$ principal component, given by the $k_{th}$ eigenvector of the covariance matrix $\mathbf{C}$. The transformation can be represented in matrix form as:
+
 $$\mathbf{PC} = \mathbf{X}\mathbf{A}$$
+
 where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the original data matrix (centered or standardized, if necessary), and $\mathbf{A}$ is the matrix whose columns are the eigenvectors of $\mathbf{C}$.
 
 3. **Angle**: The angle $\theta$ formed by three atoms $i$, $j$, and $k$, where $j$ is the vertex, can be calculated using the dot product:
