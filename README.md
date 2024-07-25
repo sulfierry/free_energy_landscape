@@ -86,12 +86,14 @@ Collective Variables (CVs) are a set of coordinates that describe the macroscopi
 Geometrically, PCA seeks the line (in the case of a single principal component) or hyperplane (in the case of multiple principal components) that best captures the distribution of the data in a high-dimensional space. The first principal component is the direction along which the projection of the data points has the largest variance. This direction corresponds to the eigenvector of the covariance matrix associated with the largest eigenvalue. The second principal component is orthogonal to the first and represents the direction of the next highest variance, corresponding to the eigenvector associated with the second largest eigenvalue, and so on.
 
 1. **Principal Component Analysis (PCA)**: Can be expressed as:
+
 $$PC_k = \sum_{i=1}^{p} a_{ki}X_i$$
+
 where $PC_k$ is the $k_{th}$ principal component, $X_i$ are the original variables, and $a_{ki}$ are the coefficients (loadings) for the $k_{th}$ principal component, given by the $k_{th}$ eigenvector of the covariance matrix $\mathbf{C}$. The transformation can be represented in matrix form as:
 $$\mathbf{PC} = \mathbf{X}\mathbf{A}$$
 where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the original data matrix (centered or standardized, if necessary), and $\mathbf{A}$ is the matrix whose columns are the eigenvectors of $\mathbf{C}$.
 
-2. **Angle**: The angle $\theta$ formed by three atoms $i$, $j$, and $k$, where $j$ is the vertex, can be calculated using the dot product:
+3. **Angle**: The angle $\theta$ formed by three atoms $i$, $j$, and $k$, where $j$ is the vertex, can be calculated using the dot product:
 
    First, determine the vectors $\vec{r}_ji$ and $\vec{r}_jk$:
    $$\vec{r}_ji = \vec{r}_i - \vec{r}_j$$
@@ -107,7 +109,7 @@ where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the o
    - $\arccos$ is the inverse cosine function, used to find the angle $\theta$ from the cosine value.
   
 
-3. **Distance**: The distance $d$ between two atoms $i$ and $j$ with positions $\vec{r}_i$ and $\vec{r}_j$ can be calculated using the Euclidean distance formula:
+4. **Distance**: The distance $d$ between two atoms $i$ and $j$ with positions $\vec{r}_i$ and $\vec{r}_j$ can be calculated using the Euclidean distance formula:
 
    First, determine the position vectors of atoms $i$ and $j$:
    $$\vec{r}_i = (x_i, y_i, z_i)$$
