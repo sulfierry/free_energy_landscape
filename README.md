@@ -98,7 +98,7 @@ where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the o
 3. **Angle**: The angle $\theta$ formed by three atoms $i$, $j$, and $k$, where $j$ is the vertex, can be calculated using the dot product:
 
    First, determine the vectors $\vec{r}_ji$ and $\vec{r}_jk$:
-   $\vec{r}_ji = \vec{r}_i - \vec{r}_j$
+   $\vec{r}_ji$ = $\vec{r}_i$ - $\vec{r}_j$
    $\vec{r}_jk = \vec{r}_k - \vec{r}_j$
 
    Then, calculate the angle $\theta$ as:
