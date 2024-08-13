@@ -98,8 +98,9 @@ where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the o
 3. **Angle**: The angle $\theta$ formed by three atoms $i$, $j$, and $k$, where $j$ is the vertex, can be calculated using the dot product:
 
    First, determine the vectors $\vec{r}_ji$ and $\vec{r}_jk$:
-   $\vec{r}_ji$ = $\vec{r}_i$ - $\vec{r}_j$
-   $\vec{r}_jk = \vec{r}_k - \vec{r}_j$
+   
+   $$\vec{r}_ji = \vec{r}_i$ - $\vec{r}_j$$
+   $$\vec{r}_jk = \vec{r}_k - \vec{r}_j$$
 
    Then, calculate the angle $\theta$ as:
    $$\cos(\theta) = \frac{\vec{r}_ji \cdot \vec{r}_jk}{|\vec{r}_ji| |\vec{r}_jk|}$$
@@ -111,7 +112,7 @@ where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the o
    - $\arccos$ is the inverse cosine function, used to find the angle $\theta$ from the cosine value.
   
 
-4. **Distance**: The distance $d$ between two atoms $i$ and $j$ with positions $\vec{r}_i$ and $\vec{r}_j$ can be calculated using the Euclidean distance formula:
+5. **Distance**: The distance $d$ between two atoms $i$ and $j$ with positions $\vec{r}_i$ and $\vec{r}_j$ can be calculated using the Euclidean distance formula:
 
    First, determine the position vectors of atoms $i$ and $j$:
    $$\vec{r}_i = (x_i, y_i, z_i)$$
