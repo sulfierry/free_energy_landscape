@@ -99,12 +99,8 @@ where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the o
 
    First, determine the vectors $\vec{r}_{ji}$ and $\vec{r}_{jk}$:
    
-   $$
-   \vec{r}_{ji} = \vec{r}_i - \vec{r}_j
-   $$
-   $$
-   \vec{r}_{jk} = \vec{r}_k - \vec{r}_j
-   $$
+   $$\vec{r}_{ji} = \vec{r}_i - \vec{r}_j$$
+   $$\vec{r}_{jk} = \vec{r}_k - \vec{r}_j$$
 
    Then, calculate the angle $\theta$ as:
    
@@ -140,6 +136,7 @@ where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the o
    - $\vec{r}_i$ and $\vec{r}_j$ are the position vectors of atoms $i$ and $j$, respectively.
    - $(x_i, y_i, z_i)$ and $(x_j, y_j, z_j)$ denote the Cartesian coordinates of atoms $i$ and $j$.
    - $|\vec{r}_i - \vec{r}_j|$ represents the magnitude of the vector difference between $\vec{r}_i$ and $\vec{r}_j$, giving the direct distance between the two atoms.
+
 
 
 Following PCA, the use of distance and angle as CVs in this study serves as an example to illustrate the tool's capabilities. However, it's important to note that the input can be any file containing two columns: the first for frames and the second for the value of the collective variable. This flexibility allows the tool to be applicable to a wide range of studies involving different types of collective variables.
