@@ -97,47 +97,32 @@ where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the o
 
 3. **Angle**: The angle $\theta$ formed by three atoms $i$, $j$, and $k$, where $j$ is the vertex, can be calculated using the dot product:
 
-   First, determine the vectors $\vec{r}_{ji}$ and $\vec{r}_{jk}$:
-   
-   $\vec{r}_{ji} = \vec{r}_i - \vec{r}_j$
-   $\vec{r}_{jk} = \vec{r}_k - \vec{r}_j$
+   First, determine the vectors $\vec{r}_ji$ and $\vec{r}_jk$:
+   $$\vec{r}_ji = \vec{r}_i - \vec{r}_j$$
+   $$\vec{r}_jk = \vec{r}_k - \vec{r}_j$$
 
    Then, calculate the angle $\theta$ as:
-   
-   $$
-   \cos(\theta) = \frac{\vec{r}_{ji} \cdot \vec{r}_{jk}}{|\vec{r}_{ji}| |\vec{r}_{jk}|}
-   $$
-   $$
-   \theta = \arccos\left(\frac{\vec{r}_{ji} \cdot \vec{r}_{jk}}{|\vec{r}_{ji}| |\vec{r}_{jk}|}\right)
-   $$
+   $$\cos(\theta) = \frac{\vec{r}_ji \cdot \vec{r}_jk}{|\vec{r}_ji| |\vec{r}_jk|}$$
+   $$\theta = \arccos\left(\frac{\vec{r}_ji \cdot \vec{r}_jk}{|\vec{r}_ji| |\vec{r}_jk|}\right)$$
 
-   - $\vec{r}_{ji}$ and $\vec{r}_{jk}$ are vectors pointing from atom $j$ to atoms $i$ and $k$, respectively.
-   - $\cdot$ denotes the dot product between the vectors $\vec{r}_{ji}$ and $\vec{r}_{jk}$.
-   - $|\vec{r}_{ji}|$ and $|\vec{r}_{jk}|$ represent the magnitudes of the vectors $\vec{r}_{ji}$ and $\vec{r}_{jk}$, respectively.
+   - $\vec{r}_ji$ and $\vec{r}_jk$ are vectors pointing from atom $j$ to atoms $i$ and $k$, respectively.
+   - $\cdot$ denotes the dot product between the vectors $\vec{r}_ji$ and $\vec{r}_jk$.
+   - $|\vec{r}_ji|$ and $|\vec{r}_jk|$ represent the magnitudes of the vectors $\vec{r}_ji$ and $\vec{r}_jk$, respectively.
    - $\arccos$ is the inverse cosine function, used to find the angle $\theta$ from the cosine value.
+  
 
-5. **Distance**: The distance $d$ between two atoms $i$ and $j$ with positions $\vec{r}_i$ and $\vec{r}_j$ can be calculated using the Euclidean distance formula:
+4. **Distance**: The distance $d$ between two atoms $i$ and $j$ with positions $\vec{r}_i$ and $\vec{r}_j$ can be calculated using the Euclidean distance formula:
 
    First, determine the position vectors of atoms $i$ and $j$:
-
-   $$
-   \vec{r}_i = (x_i, y_i, z_i)
-   $$
-   $$
-   \vec{r}_j = (x_j, y_j, z_j)
-   $$
+   $$\vec{r}_i = (x_i, y_i, z_i)$$
+   $$\vec{r}_j = (x_j, y_j, z_j)$$
 
    Then, calculate the distance $d$ as:
-
-   $$
-   d = |\vec{r}_i - \vec{r}_j| = \sqrt{(x_i - x_j)^2 + (y_i - y_j)^2 + (z_i - z_j)^2}
-   $$
+   $$d = |\vec{r}_i - \vec{r}_j| = \sqrt{(x_i - x_j)^2 + (y_i - y_j)^2 + (z_i - z_j)^2}$$
 
    - $\vec{r}_i$ and $\vec{r}_j$ are the position vectors of atoms $i$ and $j$, respectively.
    - $(x_i, y_i, z_i)$ and $(x_j, y_j, z_j)$ denote the Cartesian coordinates of atoms $i$ and $j$.
    - $|\vec{r}_i - \vec{r}_j|$ represents the magnitude of the vector difference between $\vec{r}_i$ and $\vec{r}_j$, giving the direct distance between the two atoms.
-
-
 
 Following PCA, the use of distance and angle as CVs in this study serves as an example to illustrate the tool's capabilities. However, it's important to note that the input can be any file containing two columns: the first for frames and the second for the value of the collective variable. This flexibility allows the tool to be applicable to a wide range of studies involving different types of collective variables.
 
