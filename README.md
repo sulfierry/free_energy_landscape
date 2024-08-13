@@ -81,48 +81,7 @@ The free energy landscape is a conceptual and computational tool used to underst
 
 ### Collective Variables (CVs)
 
-Collective Variables (CVs) are a set of coordinates that describe the macroscopic state of a system. They are used to reduce the complexity of molecular systems by focusing on the relevant degrees of freedom. Examples include the analysis of principal components (PCA), the distance between two atoms, angles, dihedrals, and more complex descriptors. Below are examples of commonly used CVs and their mathematical formulations.
-
-Geometrically, PCA seeks the line (in the case of a single principal component) or hyperplane (in the case of multiple principal components) that best captures the distribution of the data in a high-dimensional space. The first principal component is the direction along which the projection of the data points has the largest variance. This direction corresponds to the eigenvector of the covariance matrix associated with the largest eigenvalue. The second principal component is orthogonal to the first and represents the direction of the next highest variance, corresponding to the eigenvector associated with the second largest eigenvalue, and so on.
-
-1. **Principal Component Analysis (PCA)**: Can be expressed as:
-
-$$PC_k = \sum_{i=1}^{p} a_{ki}X_i$$
-
-where $PC_k$ is the $k_{th}$ principal component, $X_i$ are the original variables, and $a_{ki}$ are the coefficients (loadings) for the $k_{th}$ principal component, given by the $k_{th}$ eigenvector of the covariance matrix $\mathbf{C}$. The transformation can be represented in matrix form as:
-
-$$\mathbf{PC} = \mathbf{X}\mathbf{A}$$
-
-where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the original data matrix (centered or standardized, if necessary), and $\mathbf{A}$ is the matrix whose columns are the eigenvectors of $\mathbf{C}$.
-
-3. **Angle**: The angle $\theta$ formed by three atoms $i$, $j$, and $k$, where $j$ is the vertex, can be calculated using the dot product:
-
-First, determine the vectors $\vec{r}_ji$ and $\vec{r}_jk$:
-$$\vec{r}_ji = \vec{r}_i - \vec{r}_j$$
-$$\vec{r}_jk = \vec{r}_k - \vec{r}_j$$
-
-Then, calculate the angle $\theta$ as:
-$$\cos(\theta) = \frac{\vec{r}_ji \cdot \vec{r}_jk}{|\vec{r}_ji| |\vec{r}_jk|}$$
-$$\theta = \arccos\left(\frac{\vec{r}_ji \cdot \vec{r}_jk}{|\vec{r}_ji| |\vec{r}_jk|}\right)$$
-
-   - $\vec{r}_ji$ and $\vec{r}_jk$ are vectors pointing from atom $j$ to atoms $i$ and $k$, respectively.
-   - $\cdot$ denotes the dot product between the vectors $\vec{r}_ji$ and $\vec{r}_jk$.
-   - $|\vec{r}_ji|$ and $|\vec{r}_jk|$ represent the magnitudes of the vectors $\vec{r}_ji$ and $\vec{r}_jk$, respectively.
-   - $\arccos$ is the inverse cosine function, used to find the angle $\theta$ from the cosine value.
-  
-
-4. **Distance**: The distance $d$ between two atoms $i$ and $j$ with positions $\vec{r}_i$ and $\vec{r}_j$ can be calculated using the Euclidean distance formula:
-
-   First, determine the position vectors of atoms $i$ and $j$:
-   $$\vec{r}_i = (x_i, y_i, z_i)$$
-   $$\vec{r}_j = (x_j, y_j, z_j)$$
-
-   Then, calculate the distance $d$ as:
-   $$d = |\vec{r}_i - \vec{r}_j| = \sqrt{(x_i - x_j)^2 + (y_i - y_j)^2 + (z_i - z_j)^2}$$
-
-   - $\vec{r}_i$ and $\vec{r}_j$ are the position vectors of atoms $i$ and $j$, respectively.
-   - $(x_i, y_i, z_i)$ and $(x_j, y_j, z_j)$ denote the Cartesian coordinates of atoms $i$ and $j$.
-   - $|\vec{r}_i - \vec{r}_j|$ represents the magnitude of the vector difference between $\vec{r}_i$ and $\vec{r}_j$, giving the direct distance between the two atoms.
+Collective Variables (CVs) are a set of coordinates that describe the macroscopic state of a system. They are used to reduce the complexity of molecular systems by focusing on the relevant degrees of freedom. Examples include the analysis of principal components (PCA), the distance between two atoms, angles, dihedrals, and more complex descriptors.
 
 Following PCA, the use of distance and angle as CVs in this study serves as an example to illustrate the tool's capabilities. However, it's important to note that the input can be any file containing two columns: the first for frames and the second for the value of the collective variable. This flexibility allows the tool to be applicable to a wide range of studies involving different types of collective variables.
 
