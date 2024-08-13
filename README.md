@@ -99,8 +99,8 @@ where $\mathbf{PC}$ is the matrix of principal components, $\mathbf{X}$ is the o
 
    First, determine the vectors $\vec{r}_{ji}$ and $\vec{r}_{jk}$:
    
-   $$\vec{r}_{ji} = \vec{r}_i - \vec{r}_j$$
-   $$\vec{r}_{jk} = \vec{r}_k - \vec{r}_j$$
+   $\vec{r}_{ji} = \vec{r}_i - \vec{r}_j$
+   $\vec{r}_{jk} = \vec{r}_k - \vec{r}_j$
 
    Then, calculate the angle $\theta$ as:
    
