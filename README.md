@@ -33,6 +33,9 @@ This project relies on several key Python libraries for numerical computations, 
 To install these libraries, you can use the following command:
 
 ```bash
+python3.12 -m venv env
+```
+```bash
 pip install numpy==1.23.5 imageio==2.34.0 matplotlib==3.7.4 scipy==1.10.1 joblib==1.3.2
 ```
 These dependencies also are listed in the `requirements.txt` file. To install them, run the following command in your terminal:
