@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10689690.svg)](https://doi.org/10.5281/zenodo.10689690)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10850229)](https://doi.org/10.5281/zenodo.10850229)
 
 
 # Free Energy Landscape Analysis
