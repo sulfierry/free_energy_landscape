@@ -11,7 +11,7 @@ collective variables works. See [OPTIONS.md](OPTIONS.md) for the flags that chan
 
 ## 1. Free energy profile of each CV
 
-![Free energy profile](../outputs/1_Combined_Free_Energy_Profile_Normalized.png)
+![Free energy profile](../outputs/1_Combined_Free_Energy_Profile_Normalized.png?v=2)
 
 Boltzmann inversion of the 1D histogram of each collective variable, on a shared energy axis.
 
@@ -27,7 +27,7 @@ projecting onto one coordinate can hide a path that goes around it in the other.
 
 ## 2. Distribution of each CV
 
-![Histograms](../outputs/2_histograms_normalized_side_by_side.png)
+![Histograms](../outputs/2_histograms_normalized_side_by_side.png?v=2)
 
 The raw counts that Figure 1 turns into energy, on the same axes.
 
@@ -39,7 +39,7 @@ isolated bar, and any energy read off it should be treated with care.
 
 ## 3. CVs against frame
 
-![CV by frame](../outputs/3_cv_by_frame_combined_normalized.png)
+![CV by frame](../outputs/3_cv_by_frame_combined_normalized.png?v=2)
 
 Both collective variables over the trajectory, each rescaled to 0–100 so they share one axis.
 
@@ -52,7 +52,7 @@ marks the join between concatenated trajectories.
 
 ## 4. Free energy landscape
 
-![2D landscape](../outputs/4_Free_energy_landscape.png)
+![2D landscape](../outputs/4_Free_energy_landscape.png?v=2)
 
 The two collective variables combined — the main result.
 
@@ -67,7 +67,7 @@ This is where transition states, stable conformations and the paths between them
 
 ## 5. Landscape in three dimensions
 
-![3D landscape](../outputs/5_3D_landscape.png)
+![3D landscape](../outputs/5_3D_landscape.png?v=2)
 
 The same surface as relief.
 
@@ -79,7 +79,7 @@ which is harder to judge from colour alone. The surface stops at the sampled reg
 
 ## 6. Rotating view
 
-![3D animation](../outputs/6_energy_landscape_3D.gif)
+![3D animation](../outputs/6_energy_landscape_3D.gif?v=2)
 
 The 3D surface across a full rotation, so features hidden behind a ridge from one angle become
 visible from another. Controlled by `--gif_angles`, `--gif_elevation` and `--gif_duration`.
