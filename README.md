@@ -33,7 +33,7 @@ Everything else is default. The run is deterministic — no seed, no `k`, no ini
 same input gives byte-identical output on any machine and for any number of cores.
 
 Each CV file is two columns, frame index and CV value. Both must describe the same trajectory: same
-number of rows, same frame index on every row. See [docs/OPTIONS.md](docs/OPTIONS.md) for every
+number of rows, same frame index on every row. See [docs/OPTIONS.md](https://github.com/sulfierry/free_energy_landscape/blob/main/docs/OPTIONS.md) for every
 command-line flag.
 
 ## Theoretical background
@@ -50,16 +50,24 @@ angle, a dihedral — so the state of the system can be described by a handful o
 ## How it works
 
 **1. Density.** A Gaussian kernel density estimate turns the frames, one point each in the 2D CV
-space, into a smooth probability density $\hat{f}$ on a regular grid. One kernel is fitted over the
-whole trajectory; parallelism splits only its evaluation.
+space, into a smooth probability density `f` on a regular grid. One kernel is fitted over the whole
+trajectory; parallelism splits only its evaluation.
 
 **2. Free energy.** Boltzmann inversion, shifted so the global minimum sits at zero:
 
-$$G = -k_B T \ln \hat{f}, \qquad G \leftarrow G - \min G$$
+```
+G = -kB · T · ln f          then    G  <-  G - min G
+```
 
 **3. Sampling mask.** A kernel estimate returns a number even where no frame exists, and that number
 is extrapolation, not measurement. A cell counts as sampled only when the estimate expects at least
-one frame inside it; the rest is left out of the analysis and of the colour scale.
+one frame inside it:
+
+```
+f(cell) · area(cell) · N  >=  mask_min_count        (default 1 frame)
+```
+
+The rest is left out of the analysis and of the colour scale.
 
 **4. Steepest descent.** Each cell points at its lowest neighbour among the eight surrounding it, or
 at itself if none is lower. Following those pointers to their fixed point gives the local minimum
@@ -69,41 +77,55 @@ metastable state.
 **5. Saddles.** Neighbouring basins meet along a ridge. The saddle between them is the lowest point
 of that ridge, the cheapest way across:
 
-$$\text{saddle}(A,B) = \min_{\substack{x \in A,\ y \in B \\ x,\,y \text{ adjacent}}} \max\big(G(x),\,G(y)\big)$$
+```
+saddle(A,B) =   min      max( G(x), G(y) )
+              x in A
+              y in B
+              adjacent
+```
 
 **6. Depth.** How far a basin must climb to escape — its topological persistence:
 
-$$\text{depth}(A) = \min_B \text{saddle}(A,B)\ -\ \min_{x \in A} G(x)$$
+```
+depth(A) =  min saddle(A,B)  -  min  G(x)
+             B                 x in A
+```
 
 **7. Merging.** Basins shallower than the cut are absorbed by the neighbour across their lowest
 saddle. The cut is chosen at the largest step in the sorted depths, where real structure and
-estimator ripple separate, and never exceeds $k_B T$. What it chose and what it merged is printed
-on every run.
+estimator ripple separate, and never exceeds `kB·T`. What it chose and what it merged is printed
+on every run:
+
+```
+Watershed found 12 local minima; --basin_min_depth 1.01 kJ/mol (auto) merged 7 of them.
+Barrier depths (deepest first): 2.10, 1.81, 1.59, 1.43, 1.41, 0.61, 0.47, 0.27, 0.17, ...
+Largest step is 1.41 -> 0.61 kJ/mol: --basin_min_depth between them keeps 6 basins.
+```
 
 **8. Representatives.** Each frame inherits the basin of its cell. The representative of a basin is
 the frame of lowest free energy inside it — an actual conformation, ready to extract from the
 trajectory.
 
 Full derivation, a worked one-dimensional example, and why DBSCAN is not used:
-[docs/METHOD.md](docs/METHOD.md).
+[METHOD.md](https://github.com/sulfierry/free_energy_landscape/blob/main/docs/METHOD.md).
 
 ## Result
 
-![2D landscape](outputs/4_Free_energy_landscape.png?v=2)
+![2D landscape](https://raw.githubusercontent.com/sulfierry/free_energy_landscape/main/outputs/4_Free_energy_landscape.png?v=2)
 
 The two collective variables combined. Bright is low energy, dark is high; the region beyond the
 dashed line was never sampled, so no energy is claimed there. White lines are the watershed ridges
 separating basins, and each numbered callout marks a basin minimum — the legend gives its depth,
 its share of the trajectory, and its representative frame.
 
-![3D landscape](outputs/5_3D_landscape.png?v=2)
+![3D landscape](https://raw.githubusercontent.com/sulfierry/free_energy_landscape/main/outputs/5_3D_landscape.png?v=2)
 
 The same surface as relief, which makes the depth of each basin and the height of the barriers
 between them directly comparable.
 
 The run also writes the free energy profile and distribution of each CV separately, both CVs against
 frame number, and a rotating animation of the 3D surface — all six are described in
-[docs/FIGURES.md](docs/FIGURES.md).
+[docs/FIGURES.md](https://github.com/sulfierry/free_energy_landscape/blob/main/docs/FIGURES.md).
 
 ## Tables
 
@@ -128,11 +150,11 @@ dash under depth means the basin has no neighbour: it sits on its own island of 
 
 ## Documentation
 
-- [docs/METHOD.md](docs/METHOD.md) — the method in full, with a worked example and the reasoning
+- [docs/METHOD.md](https://github.com/sulfierry/free_energy_landscape/blob/main/docs/METHOD.md) — the method in full, with a worked example and the reasoning
   behind each choice
-- [docs/FIGURES.md](docs/FIGURES.md) — all six figures, with what each axis means
-- [docs/OPTIONS.md](docs/OPTIONS.md) — every command-line flag, input format, output files
-- [CHANGELOG.md](CHANGELOG.md) — what changed in 2.0.0 and why results differ from 1.x
+- [docs/FIGURES.md](https://github.com/sulfierry/free_energy_landscape/blob/main/docs/FIGURES.md) — all six figures, with what each axis means
+- [docs/OPTIONS.md](https://github.com/sulfierry/free_energy_landscape/blob/main/docs/OPTIONS.md) — every command-line flag, input format, output files
+- [CHANGELOG.md](https://github.com/sulfierry/free_energy_landscape/blob/main/CHANGELOG.md) — what changed in 2.0.0 and why results differ from 1.x
 
 ## Citation
 
