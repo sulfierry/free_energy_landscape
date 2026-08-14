@@ -1,4 +1,6 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10850229.svg)](https://doi.org/10.5281/zenodo.10850229)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.10689689-1682D4.svg)](https://doi.org/10.5281/zenodo.10689689)
+[![tests](https://github.com/sulfierry/free_energy_landscape/actions/workflows/tests.yml/badge.svg)](https://github.com/sulfierry/free_energy_landscape/actions/workflows/tests.yml)
+[![PyPI](https://img.shields.io/pypi/v/free-energy-landscape.svg)](https://pypi.org/project/free-energy-landscape/)
 
 # Free Energy Landscape Analysis
 
@@ -87,14 +89,14 @@ Full derivation, a worked one-dimensional example, and why DBSCAN is not used:
 
 ## Result
 
-![2D landscape](outputs/4_Free_energy_landscape.png)
+![2D landscape](outputs/4_Free_energy_landscape.png?v=2)
 
 The two collective variables combined. Bright is low energy, dark is high; the region beyond the
 dashed line was never sampled, so no energy is claimed there. White lines are the watershed ridges
 separating basins, and each numbered callout marks a basin minimum — the legend gives its depth,
 its share of the trajectory, and its representative frame.
 
-![3D landscape](outputs/5_3D_landscape.png)
+![3D landscape](outputs/5_3D_landscape.png?v=2)
 
 The same surface as relief, which makes the depth of each basin and the height of the barriers
 between them directly comparable.
@@ -134,4 +136,6 @@ dash under depth means the basin has no neighbour: it sits on its own island of 
 
 ## Citation
 
-[10.5281/zenodo.10850229](https://doi.org/10.5281/zenodo.10850229)
+[10.5281/zenodo.10689689](https://doi.org/10.5281/zenodo.10689689) — the concept DOI, which always
+resolves to the latest release. Zenodo also mints a DOI per version if you need to cite the exact
+one you ran.
