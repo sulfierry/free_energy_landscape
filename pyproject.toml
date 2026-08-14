@@ -13,21 +13,27 @@ classifiers = [
     "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Environment :: GPU",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Chemistry",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Topic :: Scientific/Engineering :: Physics",
     ]
 keywords = ["Free energy landscape", "Molecular Dynamics", "Collective variables", "Boltzmann equation"]
+# Pisos escolhidos como as primeiras versoes com suporte a Python 3.12+, para que uma
+# instalacao limpa num interpretador recente nunca tente compilar uma roda antiga.
 dependencies = [
-    "numpy>=1.23.5, <9.0.0",
-    "imageio>=2.34.0, <9.0.0",
-    "matplotlib>=3.7.4, <9.0.0",
-    "scipy>=1.10.1, <9.0.0",
-    "joblib>=1.3.2, <9.0.0", 
+    "numpy>=1.26",
+    "imageio>=2.34",
+    "matplotlib>=3.8",
+    "scipy>=1.11",
+    "joblib>=1.3",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [project.optional-dependencies]
 test = ["pytest>=7.0"]

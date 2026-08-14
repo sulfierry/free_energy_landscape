@@ -10,6 +10,7 @@ import multiprocessing
 import imageio.v2 as imageio
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as patheffects
+from mpl_toolkits.mplot3d import proj3d
 from scipy import ndimage
 from scipy.stats import gaussian_kde
 from joblib import Parallel, delayed
@@ -764,30 +765,31 @@ class FreeEnergyLandscape:
             color = self.discreet_colors[(b['id'] - 1) % len(self.discreet_colors)]
             marker = self.discreet_markers[(b['id'] - 1) % len(self.discreet_markers)]
 
-            coords = [[b['cv1_min']], [b['cv2_min']]]
             if three_d:
-                coords.append([b['G_min']])
-            ax.scatter(*coords, color=color, marker=marker, s=130,
-                       edgecolors='white', linewidths=1.4, zorder=6)
-
-            if three_d:
-                ax.text(b['cv1_min'], b['cv2_min'], b['G_min'], f"  {b['id']}",
-                        fontsize=11, fontweight='bold', color='white', zorder=7,
-                        path_effects=[patheffects.withStroke(linewidth=2.5,
-                                                             foreground='black')])
+                # Um marcador desenhado em 3D some atras da propria superficie quando a
+                # bacia fica do lado oposto ao da camera. Projetando o minimo para o
+                # plano da figura e anotando ali, o rotulo fica sempre por cima, com uma
+                # linha de chamada apontando o ponto — igual ao grafico 2D.
+                x2, y2, _ = proj3d.proj_transform(b['cv1_min'], b['cv2_min'],
+                                                  b['G_min'], ax.get_proj())
+                anchor = (x2, y2)
             else:
-                ax.annotate(
-                    str(b['id']),
-                    xy=(b['cv1_min'], b['cv2_min']),
-                    xytext=offsets[(b['id'] - 1) % len(offsets)],
-                    textcoords='offset points',
-                    fontsize=10, fontweight='bold', color='black',
-                    ha='center', va='center', zorder=7,
-                    bbox=dict(boxstyle='circle,pad=0.25', facecolor='white',
-                              edgecolor=color, linewidth=1.4),
-                    arrowprops=dict(arrowstyle='-', color=color, linewidth=1.2,
-                                    shrinkA=0, shrinkB=6),
-                )
+                ax.scatter([b['cv1_min']], [b['cv2_min']], color=color, marker=marker,
+                           s=130, edgecolors='white', linewidths=1.4, zorder=6)
+                anchor = (b['cv1_min'], b['cv2_min'])
+
+            ax.annotate(
+                str(b['id']),
+                xy=anchor,
+                xytext=offsets[(b['id'] - 1) % len(offsets)],
+                textcoords='offset points',
+                fontsize=10, fontweight='bold', color='black',
+                ha='center', va='center', zorder=10,
+                bbox=dict(boxstyle='circle,pad=0.25', facecolor='white',
+                          edgecolor=color, linewidth=1.4),
+                arrowprops=dict(arrowstyle='-', color=color, linewidth=1.2,
+                                shrinkA=0, shrinkB=6),
+            )
 
             depth = b.get('depth', float('inf'))
             depth_txt = "" if not np.isfinite(depth) else f", depth {depth:.1f}"
@@ -800,27 +802,38 @@ class FreeEnergyLandscape:
                                              f"frame {b['rep_frame']}")))
         return handles
 
+    def _profile_1d(self, data):
+        """Perfil de energia livre de uma CV, a partir do histograma 1D.
+
+        Bins vazios ficam NaN em vez de receberem um piso artificial de densidade.
+        Piso de 1e-10 virava um pico de ~57 kJ/mol no grafico, indistinguivel de uma
+        barreira medida quando na verdade significa "nenhum frame aqui".
+        """
+        hist, bin_edges = np.histogram(data, bins=self.bins, density=True)
+        bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+        with np.errstate(divide='ignore'):
+            G = -self.kB * self.temperature * np.log(np.where(hist > 0, hist, np.nan))
+        return bin_centers, G - np.nanmin(G)
+
     def boltzmann_inversion(self, data_list, titles, threshold=None):
 
-        fig_combined, axs_combined = plt.subplots(1, len(data_list), figsize=(20, 6), sharey=True)        
+        fig_combined, axs_combined = plt.subplots(1, len(data_list), figsize=(14, 5),
+                                                  sharey=True)
         # Inicializa a lista de elementos da legenda com o elemento para a linha de energia livre
         legend_elements = [plt.Line2D([0], [0], color='red', lw=2, label='Free energy')]
-        
+
         for idx, (ax, data, title) in enumerate(zip(axs_combined, data_list, titles)):
-            hist, bin_edges = np.histogram(data, bins=self.bins, density=True)
-            hist = np.clip(hist, a_min=1e-10, a_max=None)
-            G = -self.kB * self.temperature * np.log(hist)
-            bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
-            G_min_normalized = G - np.min(G)
-            
+            bin_centers, G_min_normalized = self._profile_1d(data)
+
             # Plotar a linha de energia livre
-            ax.plot(bin_centers, G_min_normalized, 
-                    color='red', label='Free energy' 
+            ax.plot(bin_centers, G_min_normalized,
+                    color='red', label='Free energy'
                     if idx == 0 else "_nolegend_"
                     )
-            
+
             ax.set_xlabel(title)
-            
+            ax.grid(True, alpha=0.25, linewidth=0.5)
+
         if threshold is not None and hasattr(self, 'discrete') and self.discrete:
             discrete_intervals = np.arange(0, threshold, self.discrete)
             for i, interval in enumerate(discrete_intervals):
@@ -834,11 +847,7 @@ class FreeEnergyLandscape:
 
                 # Plotar os pontos para cada intervalo nos gráficos
                 for ax, data in zip(axs_combined, data_list):
-                    hist, bin_edges = np.histogram(data, bins=self.bins, density=True)
-                    hist = np.clip(hist, a_min=1e-10, a_max=None)
-                    G = -self.kB * self.temperature * np.log(hist)
-                    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
-                    G_min_normalized = G - np.min(G)
+                    bin_centers, G_min_normalized = self._profile_1d(data)
                     mask = (G_min_normalized >= interval) & (G_min_normalized < end)
                     if np.any(mask):
                         ax.scatter(bin_centers[mask], G_min_normalized[mask], 
@@ -846,59 +855,52 @@ class FreeEnergyLandscape:
                                    marker=self.discreet_markers[i % len(self.discreet_markers)], 
                                    s=50)
 
-        # Adiciona a legenda no último subplot
-        axs_combined[-1].legend(handles=legend_elements, 
-                                loc='upper left', 
-                                bbox_to_anchor=(1.05, 1), 
-                                title="Energy intervals")
-        
+        # Titulo de legenda so faz sentido quando ha intervalos a listar
+        axs_combined[-1].legend(handles=legend_elements,
+                                loc='upper right', frameon=False,
+                                title="Energy intervals" if len(legend_elements) > 1 else None)
+
         axs_combined[0].set_ylabel('Free Energy (kJ/mol)')
-        plt.suptitle('Normalized Free Energy Profile Comparison')
-        plt.tight_layout(rect=[0, 0, 0.85, 1])
-        plt.savefig('Combined_Free_Energy_Profile_Normalized.png')
+        plt.suptitle('Free Energy Profile of Each Collective Variable')
+        plt.tight_layout()
+        plt.savefig('Combined_Free_Energy_Profile_Normalized.png',
+                    dpi=self.dpi, bbox_inches='tight')
         plt.show()
         
 
     def plot_histogram(self, data_list, titles):
-        plt.figure(figsize=(8 * len(data_list), 6))
+        plt.figure(figsize=(7 * len(data_list), 5))
         
-        # Normalizar os dados e calcular as frequências em porcentagem
-        all_counts = []
-        for data in data_list:
-            data_normalized = (data - np.min(data)) / (np.max(data) - np.min(data))
-            counts, _ = np.histogram(data_normalized, bins=self.bins)
-            all_counts.append(counts)
-        total_counts_max = max([max(counts) for counts in all_counts])
-        
+        # Contagens em porcentagem do bin mais alto entre as duas CVs. O eixo x fica nas
+        # unidades originais da CV, para que este grafico possa ser lido lado a lado com
+        # o perfil de energia livre, que usa os mesmos valores.
+        all_counts = [np.histogram(data, bins=self.bins)[0] for data in data_list]
+        total_counts_max = max(counts.max() for counts in all_counts)
+
         for i, (data, title) in enumerate(zip(data_list, titles)):
-            data_normalized = (data - np.min(data)) / (np.max(data) - np.min(data))
-            counts, bin_edges = np.histogram(data_normalized, bins=self.bins)
-            # Ajustar as contagens para que o valor máximo de contagem represente 100%
+            counts, bin_edges = np.histogram(data, bins=self.bins)
             normalized_counts = (counts / total_counts_max) * 100
             bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
-            
+
             ax = plt.subplot(1, len(data_list), i + 1)
-            bars = ax.bar(bin_centers, 
-                          normalized_counts, 
-                          width=(bin_centers[1] - bin_centers[0]), 
-                          alpha=0.7, 
-                          color='green'
-                          )
-            
+            ax.bar(bin_centers,
+                   normalized_counts,
+                   width=(bin_edges[1] - bin_edges[0]),
+                   alpha=0.85,
+                   color='#3a7d44'
+                   )
+
             ax.set_ylim(0, 100)  # Definir explicitamente o eixo Y de 0 a 100%
-            ax.set_title(f'Normalized {title}')
-            ax.set_xlabel('Value')
+            ax.set_yticks(np.arange(0, 101, 20))
+            ax.set_xlabel(title)
             if i == 0:
-                ax.set_ylabel('Frequency (%)')
-            ax.grid(True)
-        
-        # Ajustar as marcas do eixo Y para incluir o valor máximo (100%)
-        plt.yticks(np.arange(0, 101, 20))
-        
-        # Adicionar a legenda fora do loop, apenas uma vez
-        plt.figlegend(['Normalized Frequency (%)'], loc='upper right')
+                ax.set_ylabel('Frequency (% of tallest bin)')
+            ax.grid(True, alpha=0.25, linewidth=0.5)
+
+        plt.suptitle('Distribution of Each Collective Variable')
         plt.tight_layout()
-        plt.savefig('histograms_normalized_side_by_side.png')
+        plt.savefig('histograms_normalized_side_by_side.png',
+                    dpi=self.dpi, bbox_inches='tight')
         plt.show()
 
 
@@ -925,7 +927,8 @@ class FreeEnergyLandscape:
         plt.title('CV by Frame - Combined Normalized')
         plt.legend()
         plt.ylim(0, 100)  # Garantindo que o eixo Y esteja limitado de 0 a 100
-        plt.savefig('cv_by_frame_combined_normalized.png')
+        plt.savefig('cv_by_frame_combined_normalized.png',
+                    dpi=self.dpi, bbox_inches='tight')
         plt.show()
 
 
@@ -1040,6 +1043,12 @@ class FreeEnergyLandscape:
             pane.pane.set_alpha(0.04)
             pane.pane.set_edgecolor('none')
 
+        # Limites antes das anotacoes: a projecao 3D -> 2D usada para posicionar os
+        # rotulos depende deles e da camera.
+        (x_lo, x_hi), (y_lo, y_hi) = self._view_limits(result)
+        ax.set_xlim(x_lo, x_hi)
+        ax.set_ylim(y_lo, y_hi)
+
         handles = []
         legend_title = None
 
@@ -1081,9 +1090,6 @@ class FreeEnergyLandscape:
                       title=legend_title, fontsize=8, title_fontsize=9, frameon=False,
                       ncol=1 if len(handles) <= 4 else 2)
 
-        (x_lo, x_hi), (y_lo, y_hi) = self._view_limits(result)
-        ax.set_xlim(x_lo, x_hi)
-        ax.set_ylim(y_lo, y_hi)
         fig.savefig('3D_landscape.png', dpi=self.dpi, bbox_inches='tight')
         plt.show()
 

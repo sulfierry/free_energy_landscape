@@ -176,8 +176,39 @@ inside it (default 1). The rest is left blank. With that, the ceiling is no long
 - `discrete_values_energy_frames.tsv` is always written. It previously required `--energy`, even
   though the per-frame table is the main quantitative product and the basin column exists
   regardless of any display cut-off.
-- README documents the method step by step, with a worked one-dimensional example, and gives the
-  exact command that reproduces every bundled figure from `inputs/`.
+- The 1D free energy profiles no longer floor empty histogram bins at a density of `1e-10`, which
+  drew them as ~57 kJ/mol spikes indistinguishable from measured barriers. Empty bins are now a
+  break in the curve — the same principle as the sampling mask, applied in one dimension.
+- The CV histograms are plotted on the collective variable's own axis instead of a rescaled 0–1
+  one, so they can be read directly against the free energy profiles. Their legend no longer
+  covers the second panel's title.
+- Basin labels on the 3D plot are placed by projecting each minimum into the figure plane and
+  annotating there, with a leader line. Drawn as 3D markers they disappeared behind the surface
+  whenever a basin sat on the far side of it — on the bundled trajectory basin 4 was invisible.
+- README rewritten: the method in eight steps, then the landscape in 2D and 3D. The full
+  derivation moved to `docs/METHOD.md`, all six figures with their axes to `docs/FIGURES.md`, and
+  the complete flag reference to `docs/OPTIONS.md`. Figures are referenced by relative path, so
+  they render on any branch, and the exact command that reproduces every one of them from
+  `inputs/` is given and verified byte-identical.
+
+### Supported Python
+
+Minimum raised to **3.10** (3.9 reached end of life in October 2025) and the package is now tested
+through **3.14**. Dependency floors move to the first releases that ship wheels for modern
+interpreters, so a clean install on a recent Python never falls back to building an old one:
+
+| | before | now |
+|---|---|---|
+| Python | `>=3.8`, declared but untested above 3.10 | `>=3.10`, tested on 3.10–3.14 |
+| numpy | `1.23.5` pinned in requirements | `>=1.26` |
+| scipy | `1.10.1` pinned | `>=1.11` |
+| matplotlib | `3.7.4` pinned | `>=3.8` |
+| imageio | `2.34.0` pinned | `>=2.34` |
+| joblib | `1.3.2` pinned | `>=1.3` |
+
+Verified against numpy 2.5, scipy 1.18 and matplotlib 3.11 on Python 3.14, with no deprecation
+warnings. A GitHub Actions workflow runs the suite on every supported version and, separately,
+installs a built wheel on 3.14 and reproduces the bundled example end to end.
 
 #### Other additions
 
