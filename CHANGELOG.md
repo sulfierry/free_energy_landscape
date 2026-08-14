@@ -80,8 +80,7 @@ Densities are clipped to the smallest positive float before the logarithm, remov
 - `-h` / `--help` works as the first argument.
 - Options given without their value now report a clear error instead of raising `IndexError`.
 - `requirements.txt` uses lower bounds and matches `pyproject.toml` (it previously pinned exact
-  old versions that contradicted the package metadata). Tested against numpy 2.x.
-- Minimum Python raised to 3.9.
+  old versions that contradicted the package metadata). See "Supported Python" below.
 
 ### Added
 
@@ -161,8 +160,12 @@ inside it (default 1). The rest is left blank. With that, the ceiling is no long
 - Contour levels span only the useful range, in round steps, with thin light lines instead of a
   black hairline mesh.
 - Colorbar sits against the axes and the legend moves below the plot; neither steals plot area.
-- Basin labels are drawn as offset callouts with leader lines, so neighbouring labels stop
-  overlapping.
+- Basin labels are drawn as callouts with leader lines, and their placement is solved rather than
+  fixed: each label is tried in several directions and distances from its marker and keeps the
+  first position clear of every label already placed and of every other marker. Fixed offsets
+  cycled by index collided as soon as two basins landed near each other on screen. The search
+  works in screen pixels, since two basins can be far apart in CV units and touching in the
+  figure.
 - Figures are saved at 200 dpi (`--dpi`).
 - The 3D surface is cut a few cells beyond the sampled region rather than exactly at its edge.
   Cutting at the edge sliced the walls mid-rise: the sampled region is a diagonal ribbon and the
@@ -216,7 +219,7 @@ installs a built wheel on 3.14 and reproduces the bundled example end to end.
 
 - `free_energy_landscape/__init__.py`, so `from free_energy_landscape import FreeEnergyLandscape`
   works and the package is no longer an implicit namespace package.
-- `tests/` — 52 pytest tests, including an analytical anchor: a two-Gaussian mixture with known
+- `tests/` — 59 pytest tests, including an analytical anchor: a two-Gaussian mixture with known
   weights must reproduce ΔG = −k_B·T·ln(w₁/w₂), both on the grid and between basin minima.
 - `.gitignore` (covers `__pycache__/`, build artefacts, and `.pypirc`/`*.token`).
 - The 3D landscape is now saved to `3D_landscape.png`. Previously it was only shown on screen,

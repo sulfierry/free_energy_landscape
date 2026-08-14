@@ -752,20 +752,63 @@ class FreeEnergyLandscape:
         mappable.set_array([])
         return surf, mappable, ceiling
 
-    def _annotate_basins(self, ax, basins, three_d=False):
-        """Marca o minimo de cada bacia com o seu numero e devolve os itens da legenda.
+    @staticmethod
+    def _label_offsets(ax, anchors, radii=(20, 32, 46, 62), n_dirs=12, min_sep=26):
+        """Escolhe onde por cada rotulo sem que dois se sobreponham.
 
-        O rotulo sai deslocado do marcador, com linha de chamada, para que bacias vizinhas
-        nao sobreponham os numeros.
+        Deslocamentos fixos por indice falham assim que duas bacias caem perto uma da
+        outra: os rotulos se empilham. Aqui cada rotulo e testado em varias direcoes e
+        distancias do seu marcador, e fica na primeira posicao que respeita `min_sep`
+        pontos de folga em relacao aos rotulos ja colocados e a todos os marcadores. Se
+        nenhuma respeitar, fica na que maximiza a menor distancia.
+
+        As contas sao em pixels de tela, porque proximidade visual e o que importa: duas
+        bacias podem estar longe em unidades de CV e coladas na figura.
+        """
+        scale = ax.figure.dpi / 72.0            # pontos -> pixels
+        anchors_px = np.array([ax.transData.transform(a) for a in anchors], dtype=float)
+
+        placed_px = []
+        offsets = []
+        for i, anchor_px in enumerate(anchors_px):
+            others = np.delete(anchors_px, i, axis=0)
+            best_off, best_score = np.array([radii[0], radii[0]]), -np.inf
+
+            for radius in radii:
+                for k in range(n_dirs):
+                    angle = 2 * np.pi * k / n_dirs
+                    off = np.array([np.cos(angle), np.sin(angle)]) * radius
+                    pos = anchor_px + off * scale
+
+                    gaps = []
+                    if placed_px:
+                        gaps.append(np.hypot(*(np.array(placed_px) - pos).T).min())
+                    if len(others):
+                        gaps.append(np.hypot(*(others - pos).T).min())
+                    score = min(gaps) if gaps else np.inf
+
+                    if score > best_score:
+                        best_off, best_score = off, score
+                    if score >= min_sep * scale:
+                        break
+                if best_score >= min_sep * scale:
+                    break
+
+            offsets.append(tuple(best_off))
+            placed_px.append(anchor_px + best_off * scale)
+
+        return offsets
+
+    def _annotate_basins(self, ax, basins, three_d=False):
+        """Marca o minimo de cada bacia com a sua forma e o seu numero.
+
+        Devolve os itens da legenda.
         """
         handles = []
-        # Deslocamentos alternados evitam colisao entre rotulos de bacias proximas
-        offsets = [(16, 14), (-20, 14), (16, -18), (-20, -18), (22, 0), (-26, 0)]
 
+        # Ancoras primeiro: o posicionamento dos rotulos precisa conhecer todas elas
+        anchors = []
         for b in basins:
-            color = self.discreet_colors[(b['id'] - 1) % len(self.discreet_colors)]
-            marker = self.discreet_markers[(b['id'] - 1) % len(self.discreet_markers)]
-
             if three_d:
                 # Um marcador desenhado em 3D some atras da propria superficie quando a
                 # bacia fica do lado oposto ao da camera, e zorder nao ajuda porque o
@@ -774,20 +817,29 @@ class FreeEnergyLandscape:
                 # por cima, com uma linha de chamada apontando o ponto — igual ao 2D.
                 x2, y2, _ = proj3d.proj_transform(b['cv1_min'], b['cv2_min'],
                                                   b['G_min'], ax.get_proj())
-                anchor = (x2, y2)
-                ax.add_artist(Line2D([x2], [y2], marker=marker, color=color,
+                anchors.append((x2, y2))
+            else:
+                anchors.append((b['cv1_min'], b['cv2_min']))
+
+        offsets = self._label_offsets(ax, anchors)
+
+        for b, anchor, offset in zip(basins, anchors, offsets):
+            color = self.discreet_colors[(b['id'] - 1) % len(self.discreet_colors)]
+            marker = self.discreet_markers[(b['id'] - 1) % len(self.discreet_markers)]
+
+            if three_d:
+                ax.add_artist(Line2D([anchor[0]], [anchor[1]], marker=marker, color=color,
                                      markersize=11, markeredgecolor='white',
                                      markeredgewidth=1.4, linestyle='none',
                                      transform=ax.transData, zorder=9))
             else:
-                ax.scatter([b['cv1_min']], [b['cv2_min']], color=color, marker=marker,
+                ax.scatter([anchor[0]], [anchor[1]], color=color, marker=marker,
                            s=130, edgecolors='white', linewidths=1.4, zorder=6)
-                anchor = (b['cv1_min'], b['cv2_min'])
 
             ax.annotate(
                 str(b['id']),
                 xy=anchor,
-                xytext=offsets[(b['id'] - 1) % len(offsets)],
+                xytext=offset,
                 textcoords='offset points',
                 fontsize=10, fontweight='bold', color='black',
                 ha='center', va='center', zorder=10,

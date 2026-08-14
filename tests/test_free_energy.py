@@ -607,6 +607,92 @@ def test_basins_are_independent_of_n_jobs(tmp_path):
 
 
 # --------------------------------------------------------------------------
+# Posicionamento dos rotulos
+# --------------------------------------------------------------------------
+
+def label_positions(ax, anchors, offsets):
+    """Posicao final de cada rotulo, em pixels de tela."""
+    scale = ax.figure.dpi / 72.0
+    return np.array([np.array(ax.transData.transform(a)) + np.array(o) * scale
+                     for a, o in zip(anchors, offsets)])
+
+
+def test_labels_do_not_overlap_when_basins_are_adjacent(tmp_path):
+    """Ancoras coladas nao podem gerar rotulos empilhados."""
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+
+    # Seis minimos praticamente no mesmo ponto: o pior caso
+    anchors = [(5.0 + 0.03 * i, 5.0 + 0.02 * i) for i in range(6)]
+    offsets = FreeEnergyLandscape._label_offsets(ax, anchors)
+    positions = label_positions(ax, anchors, offsets)
+
+    gaps = [np.hypot(*(positions[i] - positions[j]))
+            for i in range(len(positions)) for j in range(i + 1, len(positions))]
+    plt.close(fig)
+
+    assert min(gaps) > 18.0, f"rotulos a {min(gaps):.1f} px um do outro"
+
+
+def test_labels_keep_clear_of_every_marker(tmp_path):
+    """Um rotulo tambem nao pode cair em cima do marcador de outra bacia."""
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+
+    anchors = [(4.8, 5.0), (5.2, 5.0), (5.0, 5.3)]
+    offsets = FreeEnergyLandscape._label_offsets(ax, anchors)
+    positions = label_positions(ax, anchors, offsets)
+    anchors_px = np.array([ax.transData.transform(a) for a in anchors])
+    plt.close(fig)
+
+    for i, pos in enumerate(positions):
+        for j, anchor in enumerate(anchors_px):
+            if i == j:
+                continue
+            assert np.hypot(*(pos - anchor)) > 18.0
+
+
+def test_label_offsets_are_deterministic(tmp_path):
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    anchors = [(2.0, 3.0), (2.1, 3.1), (7.0, 8.0)]
+    first = FreeEnergyLandscape._label_offsets(ax, anchors)
+    second = FreeEnergyLandscape._label_offsets(ax, anchors)
+    plt.close(fig)
+    assert first == second
+
+
+def test_every_basin_gets_a_label_offset(tmp_path):
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    anchors = [(1.0 * i, 1.0 * i) for i in range(10)]
+    offsets = FreeEnergyLandscape._label_offsets(ax, anchors)
+    plt.close(fig)
+    assert len(offsets) == len(anchors)
+    assert all(np.isfinite(o).all() for o in offsets)
+
+
+# --------------------------------------------------------------------------
 # Grade
 # --------------------------------------------------------------------------
 
