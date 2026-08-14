@@ -13,6 +13,8 @@ Input is two text files of `frame value`. Output is five figures, an animation a
 pip install free-energy-landscape
 ```
 
+Requires Python 3.10 or newer; tested through 3.14.
+
 ## Usage
 
 ```bash
@@ -83,52 +85,23 @@ trajectory.
 Full derivation, a worked one-dimensional example, and why DBSCAN is not used:
 [docs/METHOD.md](docs/METHOD.md).
 
-## Figures
-
-### 1. Free energy profile of each CV
-
-![Free energy profile](outputs/1_Combined_Free_Energy_Profile_Normalized.png)
-
-Boltzmann inversion of the 1D histogram of each collective variable, on a shared energy axis. Minima
-are the preferred values of that CV; the rise between them is the barrier along that coordinate
-alone.
-
-### 2. Distribution of each CV
-
-![Histograms](outputs/2_histograms_normalized_side_by_side.png)
-
-How often each CV value occurs, on the same axes as Figure 1 and scaled so the tallest bin across
-both variables is 100%. These are the raw counts that Figure 1 turns into energy.
-
-### 3. CVs against frame
-
-![CV by frame](outputs/3_cv_by_frame_combined_normalized.png)
-
-Both CVs over the trajectory, rescaled to a common 0–100 axis. Shows when transitions happen and
-whether the sampling is converged.
-
-### 4. Free energy landscape
+## Result
 
 ![2D landscape](outputs/4_Free_energy_landscape.png)
 
-The two CVs combined. Bright is low energy, dark is high; the region beyond the dashed line was
-never sampled, so no energy is claimed there. White lines are the watershed ridges separating
-basins, and each numbered callout marks a basin minimum. The legend gives its depth, its share of
-the trajectory, and its representative frame.
-
-### 5. Landscape in three dimensions
+The two collective variables combined. Bright is low energy, dark is high; the region beyond the
+dashed line was never sampled, so no energy is claimed there. White lines are the watershed ridges
+separating basins, and each numbered callout marks a basin minimum — the legend gives its depth,
+its share of the trajectory, and its representative frame.
 
 ![3D landscape](outputs/5_3D_landscape.png)
 
 The same surface as relief, which makes the depth of each basin and the height of the barriers
-between them directly readable.
+between them directly comparable.
 
-### 6. Rotating view
-
-![3D animation](outputs/6_energy_landscape_3D.gif)
-
-The 3D surface across a full rotation, so features hidden behind a ridge from one angle become
-visible from another.
+The run also writes the free energy profile and distribution of each CV separately, both CVs against
+frame number, and a rotating animation of the 3D surface — all six are described in
+[docs/FIGURES.md](docs/FIGURES.md).
 
 ## Tables
 
@@ -155,6 +128,7 @@ dash under depth means the basin has no neighbour: it sits on its own island of 
 
 - [docs/METHOD.md](docs/METHOD.md) — the method in full, with a worked example and the reasoning
   behind each choice
+- [docs/FIGURES.md](docs/FIGURES.md) — all six figures, with what each axis means
 - [docs/OPTIONS.md](docs/OPTIONS.md) — every command-line flag, input format, output files
 - [CHANGELOG.md](CHANGELOG.md) — what changed in 2.0.0 and why results differ from 1.x
 

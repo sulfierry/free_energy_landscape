@@ -1,0 +1,66 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[test]
+
+      - name: Run tests
+        env:
+          MPLBACKEND: Agg
+        run: pytest -q
+
+  end-to-end:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install from a built wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build
+          pip install dist/*.whl
+
+      - name: Reproduce the bundled example
+        env:
+          MPLBACKEND: Agg
+        run: |
+          mkdir run && cd run
+          free_energy_landscape ../inputs/proj1Out.txt ../inputs/proj2Out.txt \
+            --names "CV1 (Angle)" "CV2 (Distance)" --gif_angles 4
+
+      - name: Check the run produced every artefact
+        run: |
+          cd run
+          for f in Combined_Free_Energy_Profile_Normalized.png \
+                   histograms_normalized_side_by_side.png \
+                   cv_by_frame_combined_normalized.png \
+                   Free_energy_landscape_with_discrete_points.png \
+                   3D_landscape.png energy_landscape_3D.gif \
+                   basins.tsv discrete_values_energy_frames.tsv; do
+            test -s "$f" || { echo "missing or empty: $f"; exit 1; }
+          done

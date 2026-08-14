@@ -10,6 +10,7 @@ import multiprocessing
 import imageio.v2 as imageio
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as patheffects
+from mpl_toolkits.mplot3d import proj3d
 from scipy import ndimage
 from scipy.stats import gaussian_kde
 from joblib import Parallel, delayed
@@ -764,30 +765,31 @@ class FreeEnergyLandscape:
             color = self.discreet_colors[(b['id'] - 1) % len(self.discreet_colors)]
             marker = self.discreet_markers[(b['id'] - 1) % len(self.discreet_markers)]
 
-            coords = [[b['cv1_min']], [b['cv2_min']]]
             if three_d:
-                coords.append([b['G_min']])
-            ax.scatter(*coords, color=color, marker=marker, s=130,
-                       edgecolors='white', linewidths=1.4, zorder=6)
-
-            if three_d:
-                ax.text(b['cv1_min'], b['cv2_min'], b['G_min'], f"  {b['id']}",
-                        fontsize=11, fontweight='bold', color='white', zorder=7,
-                        path_effects=[patheffects.withStroke(linewidth=2.5,
-                                                             foreground='black')])
+                # Um marcador desenhado em 3D some atras da propria superficie quando a
+                # bacia fica do lado oposto ao da camera. Projetando o minimo para o
+                # plano da figura e anotando ali, o rotulo fica sempre por cima, com uma
+                # linha de chamada apontando o ponto — igual ao grafico 2D.
+                x2, y2, _ = proj3d.proj_transform(b['cv1_min'], b['cv2_min'],
+                                                  b['G_min'], ax.get_proj())
+                anchor = (x2, y2)
             else:
-                ax.annotate(
-                    str(b['id']),
-                    xy=(b['cv1_min'], b['cv2_min']),
-                    xytext=offsets[(b['id'] - 1) % len(offsets)],
-                    textcoords='offset points',
-                    fontsize=10, fontweight='bold', color='black',
-                    ha='center', va='center', zorder=7,
-                    bbox=dict(boxstyle='circle,pad=0.25', facecolor='white',
-                              edgecolor=color, linewidth=1.4),
-                    arrowprops=dict(arrowstyle='-', color=color, linewidth=1.2,
-                                    shrinkA=0, shrinkB=6),
-                )
+                ax.scatter([b['cv1_min']], [b['cv2_min']], color=color, marker=marker,
+                           s=130, edgecolors='white', linewidths=1.4, zorder=6)
+                anchor = (b['cv1_min'], b['cv2_min'])
+
+            ax.annotate(
+                str(b['id']),
+                xy=anchor,
+                xytext=offsets[(b['id'] - 1) % len(offsets)],
+                textcoords='offset points',
+                fontsize=10, fontweight='bold', color='black',
+                ha='center', va='center', zorder=10,
+                bbox=dict(boxstyle='circle,pad=0.25', facecolor='white',
+                          edgecolor=color, linewidth=1.4),
+                arrowprops=dict(arrowstyle='-', color=color, linewidth=1.2,
+                                shrinkA=0, shrinkB=6),
+            )
 
             depth = b.get('depth', float('inf'))
             depth_txt = "" if not np.isfinite(depth) else f", depth {depth:.1f}"
@@ -1041,6 +1043,12 @@ class FreeEnergyLandscape:
             pane.pane.set_alpha(0.04)
             pane.pane.set_edgecolor('none')
 
+        # Limites antes das anotacoes: a projecao 3D -> 2D usada para posicionar os
+        # rotulos depende deles e da camera.
+        (x_lo, x_hi), (y_lo, y_hi) = self._view_limits(result)
+        ax.set_xlim(x_lo, x_hi)
+        ax.set_ylim(y_lo, y_hi)
+
         handles = []
         legend_title = None
 
@@ -1082,9 +1090,6 @@ class FreeEnergyLandscape:
                       title=legend_title, fontsize=8, title_fontsize=9, frameon=False,
                       ncol=1 if len(handles) <= 4 else 2)
 
-        (x_lo, x_hi), (y_lo, y_hi) = self._view_limits(result)
-        ax.set_xlim(x_lo, x_hi)
-        ax.set_ylim(y_lo, y_hi)
         fig.savefig('3D_landscape.png', dpi=self.dpi, bbox_inches='tight')
         plt.show()
 
