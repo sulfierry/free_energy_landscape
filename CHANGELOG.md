@@ -176,8 +176,16 @@ inside it (default 1). The rest is left blank. With that, the ceiling is no long
 - `discrete_values_energy_frames.tsv` is always written. It previously required `--energy`, even
   though the per-frame table is the main quantitative product and the basin column exists
   regardless of any display cut-off.
-- README documents the method step by step, with a worked one-dimensional example, and gives the
-  exact command that reproduces every bundled figure from `inputs/`.
+- The 1D free energy profiles no longer floor empty histogram bins at a density of `1e-10`, which
+  drew them as ~57 kJ/mol spikes indistinguishable from measured barriers. Empty bins are now a
+  break in the curve — the same principle as the sampling mask, applied in one dimension.
+- The CV histograms are plotted on the collective variable's own axis instead of a rescaled 0–1
+  one, so they can be read directly against the free energy profiles. Their legend no longer
+  covers the second panel's title.
+- README rewritten: the method in eight steps, then the figures. The full derivation moved to
+  `docs/METHOD.md` and the complete flag reference to `docs/OPTIONS.md`. Figures are referenced by
+  relative path, so they render on any branch, and the exact command that reproduces every one of
+  them from `inputs/` is given and verified byte-identical.
 
 #### Other additions
 
