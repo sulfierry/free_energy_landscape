@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+env/
+venv/
+.venv/
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+.DS_Store
+.idea/
+.vscode/
+
+# Credenciais de publicacao - nunca versionar
+.pypirc
+*.token
