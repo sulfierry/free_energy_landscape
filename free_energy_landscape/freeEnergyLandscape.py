@@ -10,6 +10,7 @@ import multiprocessing
 import imageio.v2 as imageio
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as patheffects
+from matplotlib.lines import Line2D
 from mpl_toolkits.mplot3d import proj3d
 from scipy import ndimage
 from scipy.stats import gaussian_kde
@@ -767,12 +768,17 @@ class FreeEnergyLandscape:
 
             if three_d:
                 # Um marcador desenhado em 3D some atras da propria superficie quando a
-                # bacia fica do lado oposto ao da camera. Projetando o minimo para o
-                # plano da figura e anotando ali, o rotulo fica sempre por cima, com uma
-                # linha de chamada apontando o ponto — igual ao grafico 2D.
+                # bacia fica do lado oposto ao da camera, e zorder nao ajuda porque o
+                # mplot3d ordena por profundidade. Projetando o minimo para o plano da
+                # figura e desenhando ali, tanto a forma quanto o rotulo ficam sempre
+                # por cima, com uma linha de chamada apontando o ponto — igual ao 2D.
                 x2, y2, _ = proj3d.proj_transform(b['cv1_min'], b['cv2_min'],
                                                   b['G_min'], ax.get_proj())
                 anchor = (x2, y2)
+                ax.add_artist(Line2D([x2], [y2], marker=marker, color=color,
+                                     markersize=11, markeredgecolor='white',
+                                     markeredgewidth=1.4, linestyle='none',
+                                     transform=ax.transData, zorder=9))
             else:
                 ax.scatter([b['cv1_min']], [b['cv2_min']], color=color, marker=marker,
                            s=130, edgecolors='white', linewidths=1.4, zorder=6)

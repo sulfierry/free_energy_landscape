@@ -182,9 +182,11 @@ inside it (default 1). The rest is left blank. With that, the ceiling is no long
 - The CV histograms are plotted on the collective variable's own axis instead of a rescaled 0–1
   one, so they can be read directly against the free energy profiles. Their legend no longer
   covers the second panel's title.
-- Basin labels on the 3D plot are placed by projecting each minimum into the figure plane and
-  annotating there, with a leader line. Drawn as 3D markers they disappeared behind the surface
-  whenever a basin sat on the far side of it — on the bundled trajectory basin 4 was invisible.
+- Basin markers and labels on the 3D plot are placed by projecting each minimum into the figure
+  plane and drawing there, with a leader line. Drawn in 3D they disappeared behind the surface
+  whenever a basin sat on the far side of it — on the bundled trajectory basin 4 was invisible —
+  and `zorder` cannot fix it, because mplot3d sorts by depth. Each basin keeps the marker shape
+  that identifies it in the legend.
 - README rewritten: the method in eight steps, then the landscape in 2D and 3D. The full
   derivation moved to `docs/METHOD.md`, all six figures with their axes to `docs/FIGURES.md`, and
   the complete flag reference to `docs/OPTIONS.md`. Figures are referenced by relative path, so
