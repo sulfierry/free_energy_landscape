@@ -3,6 +3,17 @@
 All notable changes to this project are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Releases publish to PyPI through Trusted Publishing. PyPI authenticates the workflow directly
+  over OIDC, so there is no API token to create, store, rotate or leak. Publishing a GitHub release
+  now builds, tests and uploads on its own; nothing has to be run by hand.
+- The release workflow refuses to publish when the tag and the version in `pyproject.toml`
+  disagree, and runs the suite and `twine check` before uploading — a PyPI version can never be
+  replaced once it is up.
+
 ## [2.0.0] — 2026-08-14
 
 **This release changes numerical results.** Any analysis produced with version 1.x should be
