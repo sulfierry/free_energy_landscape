@@ -106,9 +106,6 @@ Largest step is 1.41 -> 0.61 kJ/mol: --basin_min_depth between them keeps 6 basi
 the frame of lowest free energy inside it — an actual conformation, ready to extract from the
 trajectory.
 
-Full derivation, a worked one-dimensional example, and why DBSCAN is not used:
-[METHOD.md](https://github.com/sulfierry/free_energy_landscape/blob/main/docs/METHOD.md).
-
 ## Result
 
 ![2D landscape](https://raw.githubusercontent.com/sulfierry/free_energy_landscape/main/outputs/4_Free_energy_landscape.png?v=2)
@@ -155,9 +152,3 @@ dash under depth means the basin has no neighbour: it sits on its own island of 
 - [docs/FIGURES.md](https://github.com/sulfierry/free_energy_landscape/blob/main/docs/FIGURES.md) — all six figures, with what each axis means
 - [docs/OPTIONS.md](https://github.com/sulfierry/free_energy_landscape/blob/main/docs/OPTIONS.md) — every command-line flag, input format, output files
 - [CHANGELOG.md](https://github.com/sulfierry/free_energy_landscape/blob/main/CHANGELOG.md) — what changed in 2.0.0 and why results differ from 1.x
-
-## Citation
-
-[10.5281/zenodo.10689689](https://doi.org/10.5281/zenodo.10689689) — the concept DOI, which always
-resolves to the latest release. Zenodo also mints a DOI per version if you need to cite the exact
-one you ran.
