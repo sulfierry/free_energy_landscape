@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "free_energy_landscape"
 version = "2.0.0"
-description = "The Free Energy Landscape Analysis tool provides a full suite for analyzing and visualizing free energy landscapes from molecular dynamics simulations. It focuses on deriving key insights from collective variable (CV) data, helping researchers deeply understand molecular systems' energetics and dynamics."
+description = "Builds the free energy landscape of a molecular dynamics simulation from two collective variables, segments it into metastable states by watershed, and reports a representative frame for each one."
 readme = "README.md"
 authors = [{ name = "Leon Sulfierry", email = "sulfierry@gmail.com" }]
 license = {text = "LGPL-3.0-only"}
@@ -23,7 +23,16 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Topic :: Scientific/Engineering :: Physics",
     ]
-keywords = ["Free energy landscape", "Molecular Dynamics", "Collective variables", "Boltzmann equation"]
+keywords = [
+    "free energy landscape",
+    "molecular dynamics",
+    "collective variables",
+    "Boltzmann inversion",
+    "kernel density estimation",
+    "metastable states",
+    "watershed",
+    "conformational clustering",
+]
 # Pisos escolhidos como as primeiras versoes com suporte a Python 3.12+, para que uma
 # instalacao limpa num interpretador recente nunca tente compilar uma roda antiga.
 dependencies = [
@@ -45,7 +54,11 @@ packages = ["free_energy_landscape"]
 testpaths = ["tests"]
 
 [project.urls]
-Repository =  "https://github.com/sulfierry/free_energy_landscape/"
+Homepage = "https://github.com/sulfierry/free_energy_landscape"
+Repository = "https://github.com/sulfierry/free_energy_landscape"
+Documentation = "https://github.com/sulfierry/free_energy_landscape/blob/main/docs/METHOD.md"
+Changelog = "https://github.com/sulfierry/free_energy_landscape/blob/main/CHANGELOG.md"
+Issues = "https://github.com/sulfierry/free_energy_landscape/issues"
 
 
 [project.scripts]
