@@ -3,7 +3,9 @@
 All notable changes to this project are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [2.0.1] — 2026-08-15
+
+No change to the analysis or its results. Same code, same numbers as 2.0.0.
 
 ### Added
 
@@ -13,6 +15,12 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - The release workflow refuses to publish when the tag and the version in `pyproject.toml`
   disagree, and runs the suite and `twine check` before uploading — a PyPI version can never be
   replaced once it is up.
+
+### Changed
+
+- README trimmed. The project page on PyPI carries whatever README shipped with the version that
+  built it, and cannot be edited afterwards, so bringing it in line with the repository takes a
+  release of its own — which is what this one is.
 
 ## [2.0.0] — 2026-08-14
 

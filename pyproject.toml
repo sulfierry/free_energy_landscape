@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "free_energy_landscape"
-version = "2.0.0"
+version = "2.0.1"
 description = "Builds the free energy landscape of a molecular dynamics simulation from two collective variables, segments it into metastable states by watershed, and reports a representative frame for each one."
 readme = "README.md"
 authors = [{ name = "Leon Sulfierry", email = "sulfierry@gmail.com" }]
