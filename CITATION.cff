@@ -1,10 +1,10 @@
 cff-version: 1.2.0
 title: Free Energy Landscape Analysis
 message: >-
-  If you use this software, cite the version you actually ran. The concept DOI
-  below identifies the project as a whole and always resolves to the latest
-  release; the version DOI pins the exact release, which is what reproducibility
-  needs.
+  If you use this software, cite the concept DOI below and state in the text
+  which version you ran. The concept DOI identifies the project rather than one
+  release, so every citation stays counted together; per-version DOIs exist as
+  well but split the count across releases.
 type: software
 authors:
   - given-names: Leon

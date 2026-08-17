@@ -155,18 +155,22 @@ dash under depth means the basin has no neighbour: it sits on its own island of 
 
 ## Citation
 
-Zenodo mints two DOIs, and they are not interchangeable:
+Cite this DOI, and state in the text which version you ran:
 
-| DOI | identifies | resolves to |
-|---|---|---|
-| [10.5281/zenodo.10689689](https://doi.org/10.5281/zenodo.10689689) | the project, all versions | whichever release is newest |
-| [10.5281/zenodo.21953225](https://doi.org/10.5281/zenodo.21953225) | release 2.0.1 | 2.0.1, permanently |
+**[10.5281/zenodo.10689689](https://doi.org/10.5281/zenodo.10689689)**
 
-Cite the **version DOI** of the release you ran — results changed between 1.x and 2.0.0, so the
-version is part of the result. Use the concept DOI only when referring to the tool in general; it
-is the one in the badge above, which is why the badge never goes stale.
+> Sulfierry, L. *Free Energy Landscape Analysis*. Zenodo. https://doi.org/10.5281/zenodo.10689689
 
-Every release has its own version DOI, listed on the
-[Zenodo record](https://doi.org/10.5281/zenodo.10689689) under *Versions*. GitHub's
-*Cite this repository* button reads [CITATION.cff](https://github.com/sulfierry/free_energy_landscape/blob/main/CITATION.cff)
-and carries both.
+It is the concept DOI: it identifies the project rather than one release, always resolves to the
+newest version, and keeps every citation of the software counted together. It is also the DOI in
+the badge above, which is why the badge never goes stale.
+
+Zenodo additionally mints a DOI per release — 2.0.1 is
+[10.5281/zenodo.21953225](https://doi.org/10.5281/zenodo.21953225), and the rest are listed on the
+record under *Versions*. Use one only when you need to point at a single release and nothing else;
+citing per version splits the count across releases, which is why naming the version in prose is
+the better habit. It matters here: results changed between 1.x and 2.0.0, so the version belongs in
+your methods either way.
+
+GitHub's *Cite this repository* button reads
+[CITATION.cff](https://github.com/sulfierry/free_energy_landscape/blob/main/CITATION.cff).
