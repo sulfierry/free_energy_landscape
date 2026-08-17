@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+title: Free Energy Landscape Analysis
+message: >-
+  If you use this software, cite the concept DOI below and state in the text
+  which version you ran. The concept DOI identifies the project rather than one
+  release, so every citation stays counted together; per-version DOIs exist as
+  well but split the count across releases.
+type: software
+authors:
+  - given-names: Leon
+    family-names: Sulfierry
+    email: sulfierry@gmail.com
+repository-code: https://github.com/sulfierry/free_energy_landscape
+license: LGPL-3.0-only
+version: 2.0.1
+date-released: '2026-08-15'
+doi: 10.5281/zenodo.10689689
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.10689689
+    description: Concept DOI — the project, always resolving to the latest release
+  - type: doi
+    value: 10.5281/zenodo.21953225
+    description: Version DOI — release 2.0.1
+keywords:
+  - free energy landscape
+  - molecular dynamics
+  - collective variables
+  - Boltzmann inversion
+  - kernel density estimation
+  - metastable states
+  - watershed

@@ -1,0 +1,36 @@
+{
+  "title": "Free Energy Landscape Analysis",
+  "upload_type": "software",
+  "description": "<p>Builds the free energy landscape of a molecular dynamics simulation from two collective variables, segments it into metastable states by watershed, and reports a representative frame for each one.</p><p>A Gaussian kernel density estimate over the two collective variables is converted to free energy by Boltzmann inversion. Cells the estimate does not support are excluded rather than extrapolated. The surface is then partitioned into basins of attraction by steepest descent, and basins separated by a barrier shallower than the thermal scale are merged by topological persistence, so what is reported are metastable states rather than ripples in the estimator. Each basin comes with the position and depth of its minimum, its population, and the sampled conformation of lowest free energy inside it.</p><p>Cite this concept DOI for the software as a whole and state the version used in the text.</p>",
+  "creators": [
+    {
+      "name": "Sulfierry, Leon"
+    }
+  ],
+  "license": "lgpl-3.0",
+  "access_right": "open",
+  "keywords": [
+    "free energy landscape",
+    "molecular dynamics",
+    "collective variables",
+    "Boltzmann inversion",
+    "kernel density estimation",
+    "metastable states",
+    "watershed segmentation",
+    "conformational clustering",
+    "computational chemistry",
+    "structural biology"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/sulfierry/free_energy_landscape",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://pypi.org/project/free-energy-landscape/",
+      "relation": "isIdenticalTo",
+      "scheme": "url"
+    }
+  ]
+}
