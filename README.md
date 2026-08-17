@@ -152,3 +152,21 @@ dash under depth means the basin has no neighbour: it sits on its own island of 
 - [docs/FIGURES.md](https://github.com/sulfierry/free_energy_landscape/blob/main/docs/FIGURES.md) — all six figures, with what each axis means
 - [docs/OPTIONS.md](https://github.com/sulfierry/free_energy_landscape/blob/main/docs/OPTIONS.md) — every command-line flag, input format, output files
 - [CHANGELOG.md](https://github.com/sulfierry/free_energy_landscape/blob/main/CHANGELOG.md) — what changed in 2.0.0 and why results differ from 1.x
+
+## Citation
+
+Zenodo mints two DOIs, and they are not interchangeable:
+
+| DOI | identifies | resolves to |
+|---|---|---|
+| [10.5281/zenodo.10689689](https://doi.org/10.5281/zenodo.10689689) | the project, all versions | whichever release is newest |
+| [10.5281/zenodo.21953225](https://doi.org/10.5281/zenodo.21953225) | release 2.0.1 | 2.0.1, permanently |
+
+Cite the **version DOI** of the release you ran — results changed between 1.x and 2.0.0, so the
+version is part of the result. Use the concept DOI only when referring to the tool in general; it
+is the one in the badge above, which is why the badge never goes stale.
+
+Every release has its own version DOI, listed on the
+[Zenodo record](https://doi.org/10.5281/zenodo.10689689) under *Versions*. GitHub's
+*Cite this repository* button reads [CITATION.cff](https://github.com/sulfierry/free_energy_landscape/blob/main/CITATION.cff)
+and carries both.
